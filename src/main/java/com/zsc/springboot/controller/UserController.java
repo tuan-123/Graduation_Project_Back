@@ -1,11 +1,13 @@
 package com.zsc.springboot.controller;
 
 
+import com.zsc.springboot.common.SendEmailCode;
 import com.zsc.springboot.common.ServerResponse;
 import com.zsc.springboot.form.FindPasswordForm;
 import com.zsc.springboot.form.LoginForm;
 import com.zsc.springboot.form.RegisterForm;
 import com.zsc.springboot.form.UpdatePsdForm;
+import com.zsc.springboot.service.UserService;
 import com.zsc.springboot.service.impl.SchoolServiceImpl;
 import com.zsc.springboot.service.impl.UserServiceImpl;
 import com.zsc.springboot.util.*;
@@ -15,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.subject.Subject;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -42,17 +45,57 @@ public class UserController {
     private EmailCodeUtil emailCodeUtil;
 
     @Autowired
-    private UserServiceImpl userService;
-    @Autowired
-    private SchoolServiceImpl schoolService;
+    private UserService userService;
 
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    /*
     @ApiOperation(value = "发送验证码接口",response = ServerResponse.class,httpMethod = "POST")
     @PostMapping("/sendEmailCode")
     public ServerResponse sendEmailCode(String phone,String email){
         boolean sendCode = emailCodeUtil.sendEmailCode(phone,email);
         return sendCode?ServerResponse.success(null):ServerResponse.fail("发送失败");
     }
+    */
 
+    @ApiOperation(value = "发送验证码接口",response = ServerResponse.class,httpMethod = "POST")
+    @PostMapping("/sendEmailCode")
+    public ServerResponse sendEmailCode(String phone,String email){
+        if(phone == null || email == null)
+            return ServerResponse.fail("手机号或邮箱不能为空");
+        //生成验证码  并存入缓存
+        String code = emailCodeUtil.createEmailCode(phone);
+        if(code == null)
+            return ServerResponse.fail("获取失败");
+        SendEmailCode sendEmailCode = new SendEmailCode();
+        sendEmailCode.setEmail(email);
+        sendEmailCode.setCode(code);
+        rabbitTemplate.convertAndSend("fanout_exchange","",sendEmailCode);
+        return ServerResponse.success(null);
+    }
+
+    @ApiOperation(value = "开启人脸登录接口",response = ServerResponse.class,httpMethod = "POST")
+    @RequiresAuthentication
+    @PostMapping("/addFaceLogin")
+    public ServerResponse addFaceLogin(MultipartFile multipartFile,String userId) throws Exception {
+        if(userId == null || userId.length() <= 0)
+            return ServerResponse.fail("用户Id不能为空");
+        String faceToken = FacePPUtil.imgToFaceToken(multipartFile);
+        if(faceToken.equals("-1"))
+            return ServerResponse.fail("识别到多个人脸");
+        boolean addFaceTokenToFaceSet = FacePPUtil.addFaceTokenToFaceSet(faceToken, outerId);
+        if(!addFaceTokenToFaceSet)
+            return ServerResponse.fail("Add FaceSet Fail");
+        boolean addUserIDToFaceToken = FacePPUtil.addUserIDToFaceToken(userId, faceToken);
+        if(!addUserIDToFaceToken)
+            return ServerResponse.fail("Add USERID Fail");
+        Integer update = userService.addFaceLogin(userId);
+        if(update != 1)
+            return ServerResponse.fail("失败");
+        // 注意此处没对上方已生成的faceToken等进行撤销
+        return ServerResponse.success(null);
+    }
 
     @ApiOperation(value = "注册接口",response = ServerResponse.class,httpMethod = "POST")
     @PostMapping("/register")
@@ -190,8 +233,18 @@ public class UserController {
         if(checkResult == 0){
             return ServerResponse.fail("邮箱与账号不匹配");
         }
+        /*
         boolean sendCode = emailCodeUtil.sendEmailCode(userId,email);
         return sendCode?ServerResponse.success(null):ServerResponse.fail("发送失败");
+         */
+        String code = emailCodeUtil.createEmailCode(userId);
+        if(code == null)
+            return ServerResponse.fail("获取失败");
+        SendEmailCode sendEmailCode = new SendEmailCode();
+        sendEmailCode.setEmail(email);
+        sendEmailCode.setCode(code);
+        rabbitTemplate.convertAndSend("fanout_exchange","",sendEmailCode);
+        return ServerResponse.success(null);
     }
 
     @ApiOperation(value = "找回密码接口",response = ServerResponse.class,httpMethod = "POST")

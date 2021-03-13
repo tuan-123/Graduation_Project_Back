@@ -2,6 +2,7 @@ package com.zsc.springboot.controller;
 
 
 import com.zsc.springboot.common.ServerResponse;
+import com.zsc.springboot.service.SchoolService;
 import com.zsc.springboot.service.impl.SchoolServiceImpl;
 import com.zsc.springboot.vo.SchoolSelectVo;
 import io.swagger.annotations.ApiOperation;
@@ -23,7 +24,7 @@ import java.util.List;
 @RequestMapping("/school")
 public class SchoolController {
     @Autowired
-    private SchoolServiceImpl schoolService;
+    private SchoolService schoolService;
 
     /**
      * 添加省份
