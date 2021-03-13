@@ -9,6 +9,8 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
+
 /**
  * <p>
  *  Mapper 接口
@@ -37,9 +39,13 @@ public interface UserMapper extends BaseMapper<User> {
     @Select("select nick_name,image from user where phone = #{userId} and deleted = 0 and state = 1 limit 1")
     UserIndexVo getUserNameAndHImg(String userId);
 
-    @Select("select u.image,u.nick_name,u.email,if(u.school_id = -1,-1,(select name from school where id = u.school_id)) as schoolName,u.school_num from user u where u.phone = #{userId} and u.deleted = 0 and u.state = 1 limit 1")
+    @Select("select u.image,u.nick_name,u.email,if(u.school_id = -1,-1,(select name from school where id = u.school_id)) as schoolName,u.school_num,u.face_login from user u where u.phone = #{userId} and u.deleted = 0 and u.state = 1 limit 1")
     UserDetailInfoVo getUserDetailInfo(String userId);
 
     @Select("select count(phone) from user where phone = #{userId} and email = #{email} and deleted = 0 and state = 1 limit 1")
     Integer checkByUserIdAndEmail(String userId,String email);
+
+    @Select("select school_id from user where phone = #{userId} limit 1")
+    Integer getUserSchoolIdByUserId(String userId);
+
 }
