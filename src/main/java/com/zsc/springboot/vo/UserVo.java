@@ -1,5 +1,6 @@
 package com.zsc.springboot.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,5 +22,6 @@ public class UserVo {
     private Integer state;
     private String image;
     private Integer faceLogin;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:sss",timezone = "GTM+8")
     private Date createTime;
 }

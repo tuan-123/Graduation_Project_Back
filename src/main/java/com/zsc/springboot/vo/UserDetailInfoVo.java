@@ -17,4 +17,5 @@ public class UserDetailInfoVo {
     private String email;
     private String schoolName;
     private String schoolNum;
+    private Integer faceLogin;
 }
