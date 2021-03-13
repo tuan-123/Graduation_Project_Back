@@ -28,6 +28,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 
 /**
  * <p>
@@ -129,6 +130,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.getUserDetailInfo(userId);
     }
 
+    @Transactional
     @Override
     public Integer updateNickName(String userId, String nickName) {
         User user = userMapper.selectById(userId);
@@ -139,6 +141,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.updateById(user);
     }
 
+    @Transactional
     @Override
     public Integer updateSchoolNum(String userId, String schoolNum) {
         User user = userMapper.selectById(userId);
@@ -149,6 +152,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.updateById(user);
     }
 
+    @Transactional
     @Override
     public Integer updateSchool(String userId, Integer schoolId) {
         User user = userMapper.selectById(userId);
@@ -159,6 +163,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.updateById(user);
     }
 
+    @Transactional
     @Override
     public Integer updateImg(String userId, String imgUrl) {
         User user = userMapper.selectById(userId);
@@ -188,6 +193,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.checkByUserIdAndEmail(userId,email);
     }
 
+    @Transactional
     @Override
     public Integer findPassword(FindPasswordForm findPasswordForm) {
         User user = userMapper.selectById(findPasswordForm.getUserId());
@@ -201,6 +207,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }else{
             return -2;
         }
+    }
+
+    @Override
+    public Integer getUserSchoolIdByUserId(String userId) {
+        return userMapper.getUserSchoolIdByUserId(userId);
+    }
+
+    @Transactional
+    @Override
+    public Integer addFaceLogin(String userId) {
+        User user = userMapper.selectById(userId);
+        user.setFaceLogin(1);
+        return userMapper.updateById(user);
     }
 
 }

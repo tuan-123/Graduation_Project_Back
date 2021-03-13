@@ -34,5 +34,7 @@ public interface UserService extends IService<User> {
     public Integer updatePassword(String userId, String oldPsd, String newPsd);
     public Integer checkByUserIdAndEmail(String userId,String email);
     public Integer findPassword(FindPasswordForm findPasswordForm);
+    Integer getUserSchoolIdByUserId(String userId);
+    Integer addFaceLogin(String userId);
 
 }
