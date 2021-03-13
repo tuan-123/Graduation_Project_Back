@@ -81,6 +81,13 @@ public class EmailCodeUtil {
         return true;
     }
 
+    public String createEmailCode(String phone){
+        String code = getCode();
+        redisTemplate.opsForValue().set(phone,code,5, TimeUnit.MINUTES);
+        //log.info("发送邮件成功：" + to);
+        return code;
+    }
+
 
 
 }
