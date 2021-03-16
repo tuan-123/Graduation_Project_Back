@@ -72,29 +72,30 @@ public class HelpServiceImpl extends ServiceImpl<HelpMapper, Help> implements He
         Page<Help> helpPage;
         helpPage = (Page<Help>) helpMapper.selectPage(iPage,qw);
         List<Help> helps = helpPage.getRecords();
-        if(helps == null || helps.size() <= 0) return null;
-        HelpVo helpVo;
         List<HelpVo> helpVos = new ArrayList<>();
-        UserIndexVo userIndexVo = userService.getUserNameAndHImg(userId);
-        for(Help help : helps){
-            helpVo = new HelpVo();
-            helpVo.setId(help.getId());
-            helpVo.setUserId(userId);
-            helpVo.setUserName(userIndexVo.getNickName());
-            helpVo.setUserImg(userIndexVo.getImage());
-            helpVo.setArticle(help.getHelpArticle());
-            helpVo.setTime(help.getHelpTime());
-            helpVo.setPlace(help.getHelpPlace());
-            helpVo.setTo(help.getHelpTo());
-            helpVo.setFee(help.getHelpFee());
-            helpVo.setDescr(help.getHelpDescr());
-            helpVo.setPhone(help.getHelpPhone());
-            helpVo.setPhotos(ArrayUtil.stringToObject(help.getHelpPhoto()));
-            helpVo.setState(help.getHelpState());
-            helpVo.setAcceptUserId(help.getAcceptUserId());
-            helpVo.setCreateTime(help.getCreateTime());
-            helpVo.setCommentVoList(commentService.getCommentsByParentId(help.getId()));
-            helpVos.add(helpVo);
+        if(helps != null && helps.size() > 0){
+            HelpVo helpVo;
+            UserIndexVo userIndexVo = userService.getUserNameAndHImg(userId);
+            for(Help help : helps){
+                helpVo = new HelpVo();
+                helpVo.setId(help.getId());
+                helpVo.setUserId(userId);
+                helpVo.setUserName(userIndexVo.getNickName());
+                helpVo.setUserImg(userIndexVo.getImage());
+                helpVo.setArticle(help.getHelpArticle());
+                helpVo.setTime(help.getHelpTime());
+                helpVo.setPlace(help.getHelpPlace());
+                helpVo.setTo(help.getHelpTo());
+                helpVo.setFee(help.getHelpFee());
+                helpVo.setDescr(help.getHelpDescr());
+                helpVo.setPhone(help.getHelpPhone());
+                helpVo.setPhotos(ArrayUtil.stringToObject(help.getHelpPhoto()));
+                helpVo.setState(help.getHelpState());
+                helpVo.setAcceptUserId(help.getAcceptUserId());
+                helpVo.setCreateTime(help.getCreateTime());
+                helpVo.setCommentVoList(commentService.getCommentsByParentId(help.getId()));
+                helpVos.add(helpVo);
+            }
         }
         HelpListVo helpListVo = new HelpListVo();
         helpListVo.setCurrentPage(helpPage.getCurrent());
@@ -119,30 +120,31 @@ public class HelpServiceImpl extends ServiceImpl<HelpMapper, Help> implements He
         Page<Help> helpPage;
         helpPage = (Page<Help>) helpMapper.selectPage(iPage,qw);
         List<Help> helps = helpPage.getRecords();
-        if(helps == null || helps.size() <= 0) return null;
-        HelpVo helpVo;
         List<HelpVo> helpVos = new ArrayList<>();
-        UserIndexVo userIndexVo;
-        for(Help help : helps){
-            helpVo = new HelpVo();
-            helpVo.setId(help.getId());
-            userIndexVo = userService.getUserNameAndHImg(help.getUserId());
-            helpVo.setUserId(help.getUserId());
-            helpVo.setUserName(userIndexVo.getNickName());
-            helpVo.setUserImg(userIndexVo.getImage());
-            helpVo.setArticle(help.getHelpArticle());
-            helpVo.setTime(help.getHelpTime());
-            helpVo.setPlace(help.getHelpPlace());
-            helpVo.setTo(help.getHelpTo());
-            helpVo.setFee(help.getHelpFee());
-            helpVo.setDescr(help.getHelpDescr());
-            helpVo.setPhone(help.getHelpPhone());
-            helpVo.setPhotos(ArrayUtil.stringToObject(help.getHelpPhoto()));
-            helpVo.setState(help.getHelpState());
-            helpVo.setAcceptUserId(help.getAcceptUserId());
-            helpVo.setCreateTime(help.getCreateTime());
-            helpVo.setCommentVoList(commentService.getCommentsByParentId(help.getId()));
-            helpVos.add(helpVo);
+        if(helps != null && helps.size() > 0) {
+            HelpVo helpVo;
+            UserIndexVo userIndexVo;
+            for(Help help : helps){
+                helpVo = new HelpVo();
+                helpVo.setId(help.getId());
+                userIndexVo = userService.getUserNameAndHImg(help.getUserId());
+                helpVo.setUserId(help.getUserId());
+                helpVo.setUserName(userIndexVo.getNickName());
+                helpVo.setUserImg(userIndexVo.getImage());
+                helpVo.setArticle(help.getHelpArticle());
+                helpVo.setTime(help.getHelpTime());
+                helpVo.setPlace(help.getHelpPlace());
+                helpVo.setTo(help.getHelpTo());
+                helpVo.setFee(help.getHelpFee());
+                helpVo.setDescr(help.getHelpDescr());
+                helpVo.setPhone(help.getHelpPhone());
+                helpVo.setPhotos(ArrayUtil.stringToObject(help.getHelpPhoto()));
+                helpVo.setState(help.getHelpState());
+                helpVo.setAcceptUserId(help.getAcceptUserId());
+                helpVo.setCreateTime(help.getCreateTime());
+                helpVo.setCommentVoList(commentService.getCommentsByParentId(help.getId()));
+                helpVos.add(helpVo);
+            }
         }
         HelpListVo helpListVo = new HelpListVo();
         helpListVo.setCurrentPage(helpPage.getCurrent());
@@ -172,31 +174,34 @@ public class HelpServiceImpl extends ServiceImpl<HelpMapper, Help> implements He
         Page<Help> helpPage;
         helpPage = (Page<Help>) helpMapper.selectPage(iPage,qw);
         List<Help> helps = helpPage.getRecords();
-        if(helps == null || helps.size() <= 0) return null;
-        HelpVo helpVo;
         List<HelpVo> helpVos = new ArrayList<>();
-        UserIndexVo userIndexVo;
-        for(Help help : helps){
-            helpVo = new HelpVo();
-            helpVo.setId(help.getId());
-            userIndexVo = userService.getUserNameAndHImg(help.getUserId());
-            helpVo.setUserId(help.getUserId());
-            helpVo.setUserName(userIndexVo.getNickName());
-            helpVo.setUserImg(userIndexVo.getImage());
-            helpVo.setArticle(help.getHelpArticle());
-            helpVo.setTime(help.getHelpTime());
-            helpVo.setPlace(help.getHelpPlace());
-            helpVo.setTo(help.getHelpTo());
-            helpVo.setFee(help.getHelpFee());
-            helpVo.setDescr(help.getHelpDescr());
-            helpVo.setPhone(help.getHelpPhone());
-            helpVo.setPhotos(ArrayUtil.stringToObject(help.getHelpPhoto()));
-            helpVo.setState(help.getHelpState());
-            helpVo.setAcceptUserId(help.getAcceptUserId());
-            helpVo.setCreateTime(help.getCreateTime());
-            helpVo.setCommentVoList(commentService.getCommentsByParentId(help.getId()));
-            helpVos.add(helpVo);
+        if(helps != null || helps.size() > 0) {
+            HelpVo helpVo;
+
+            UserIndexVo userIndexVo;
+            for(Help help : helps){
+                helpVo = new HelpVo();
+                helpVo.setId(help.getId());
+                userIndexVo = userService.getUserNameAndHImg(help.getUserId());
+                helpVo.setUserId(help.getUserId());
+                helpVo.setUserName(userIndexVo.getNickName());
+                helpVo.setUserImg(userIndexVo.getImage());
+                helpVo.setArticle(help.getHelpArticle());
+                helpVo.setTime(help.getHelpTime());
+                helpVo.setPlace(help.getHelpPlace());
+                helpVo.setTo(help.getHelpTo());
+                helpVo.setFee(help.getHelpFee());
+                helpVo.setDescr(help.getHelpDescr());
+                helpVo.setPhone(help.getHelpPhone());
+                helpVo.setPhotos(ArrayUtil.stringToObject(help.getHelpPhoto()));
+                helpVo.setState(help.getHelpState());
+                helpVo.setAcceptUserId(help.getAcceptUserId());
+                helpVo.setCreateTime(help.getCreateTime());
+                helpVo.setCommentVoList(commentService.getCommentsByParentId(help.getId()));
+                helpVos.add(helpVo);
+            }
         }
+
         HelpListVo helpListVo = new HelpListVo();
         helpListVo.setCurrentPage(helpPage.getCurrent());
         helpListVo.setTotal(helpPage.getTotal());
@@ -217,30 +222,33 @@ public class HelpServiceImpl extends ServiceImpl<HelpMapper, Help> implements He
         Page<Help> helpPage;
         helpPage = (Page<Help>) helpMapper.selectPage(iPage,qw);
         List<Help> helps = helpPage.getRecords();
-        if(helps == null || helps.size() <= 0) return null;
-        HelpVo helpVo;
         List<HelpVo> helpVos = new ArrayList<>();
-        UserIndexVo userIndexVo = userService.getUserNameAndHImg(userId);
-        for(Help help : helps){
-            helpVo = new HelpVo();
-            helpVo.setId(help.getId());
-            helpVo.setUserId(userId);
-            helpVo.setUserName(userIndexVo.getNickName());
-            helpVo.setUserImg(userIndexVo.getImage());
-            helpVo.setArticle(help.getHelpArticle());
-            helpVo.setTime(help.getHelpTime());
-            helpVo.setPlace(help.getHelpPlace());
-            helpVo.setTo(help.getHelpTo());
-            helpVo.setFee(help.getHelpFee());
-            helpVo.setDescr(help.getHelpDescr());
-            helpVo.setPhone(help.getHelpPhone());
-            helpVo.setPhotos(ArrayUtil.stringToObject(help.getHelpPhoto()));
-            helpVo.setState(help.getHelpState());
-            helpVo.setAcceptUserId(help.getAcceptUserId());
-            helpVo.setCreateTime(help.getCreateTime());
-            helpVo.setCommentVoList(commentService.getCommentsByParentId(help.getId()));
-            helpVos.add(helpVo);
+        if(helps != null || helps.size() > 0) {
+            HelpVo helpVo;
+
+            UserIndexVo userIndexVo = userService.getUserNameAndHImg(userId);
+            for(Help help : helps){
+                helpVo = new HelpVo();
+                helpVo.setId(help.getId());
+                helpVo.setUserId(userId);
+                helpVo.setUserName(userIndexVo.getNickName());
+                helpVo.setUserImg(userIndexVo.getImage());
+                helpVo.setArticle(help.getHelpArticle());
+                helpVo.setTime(help.getHelpTime());
+                helpVo.setPlace(help.getHelpPlace());
+                helpVo.setTo(help.getHelpTo());
+                helpVo.setFee(help.getHelpFee());
+                helpVo.setDescr(help.getHelpDescr());
+                helpVo.setPhone(help.getHelpPhone());
+                helpVo.setPhotos(ArrayUtil.stringToObject(help.getHelpPhoto()));
+                helpVo.setState(help.getHelpState());
+                helpVo.setAcceptUserId(help.getAcceptUserId());
+                helpVo.setCreateTime(help.getCreateTime());
+                helpVo.setCommentVoList(commentService.getCommentsByParentId(help.getId()));
+                helpVos.add(helpVo);
+            }
         }
+
         HelpListVo helpListVo = new HelpListVo();
         helpListVo.setCurrentPage(helpPage.getCurrent());
         helpListVo.setTotal(helpPage.getTotal());
