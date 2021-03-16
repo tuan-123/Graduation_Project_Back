@@ -109,21 +109,22 @@ public class IdleServiceImpl extends ServiceImpl<IdleMapper, Idle> implements Id
         idlePage = (Page<Idle>) idleMapper.selectPage(iPage, qw);
         List<Idle> idles = idlePage.getRecords();
         List<IdleBriefVo> idleBriefVoList = new ArrayList<>();
-        if(idles == null || idles.size() <= 0) return null;
-        IdleBriefVo idleBriefVo;
-        for(Idle idle : idles){
-            idleBriefVo = new IdleBriefVo();
-            idleBriefVo.setId(idle.getId());
-            idleBriefVo.setUserId(idle.getUserId());
-            idleBriefVo.setTitle(idle.getTitle());
-            idleBriefVo.setTab(ArrayUtil.stringToObject(idle.getTab()));
-            idleBriefVo.setDescribe(idle.getDescr());
-            idleBriefVo.setPrice(idle.getPrice());
-            idleBriefVo.setNum(idle.getNum());
-            idleBriefVo.setState(idle.getState());
-            idleBriefVo.setCreateTime(idle.getCreateTime());
-            idleBriefVo.setPhoto(ArrayUtil.stringToObject(idle.getPhoto())[0].toString());
-            idleBriefVoList.add(idleBriefVo);
+        if(idles != null && idles.size() > 0) {
+            IdleBriefVo idleBriefVo;
+            for(Idle idle : idles){
+                idleBriefVo = new IdleBriefVo();
+                idleBriefVo.setId(idle.getId());
+                idleBriefVo.setUserId(idle.getUserId());
+                idleBriefVo.setTitle(idle.getTitle());
+                idleBriefVo.setTab(ArrayUtil.stringToObject(idle.getTab()));
+                idleBriefVo.setDescribe(idle.getDescr());
+                idleBriefVo.setPrice(idle.getPrice());
+                idleBriefVo.setNum(idle.getNum());
+                idleBriefVo.setState(idle.getState());
+                idleBriefVo.setCreateTime(idle.getCreateTime());
+                idleBriefVo.setPhoto(ArrayUtil.stringToObject(idle.getPhoto())[0].toString());
+                idleBriefVoList.add(idleBriefVo);
+            }
         }
         IdleBriefListVo idleBriefListVo = new IdleBriefListVo();
         idleBriefListVo.setCurrentPage(idlePage.getCurrent());
@@ -144,21 +145,22 @@ public class IdleServiceImpl extends ServiceImpl<IdleMapper, Idle> implements Id
         idlePage = (Page<Idle>) idleMapper.selectPage(iPage, qw);
         List<Idle> idles = idlePage.getRecords();
         List<IdleBriefVo> idleBriefVoList = new ArrayList<>();
-        if(idles == null || idles.size() <= 0) return null;
-        IdleBriefVo idleBriefVo;
-        for(Idle idle : idles){
-            idleBriefVo = new IdleBriefVo();
-            idleBriefVo.setId(idle.getId());
-            idleBriefVo.setUserId(userId);
-            idleBriefVo.setTitle(idle.getTitle());
-            idleBriefVo.setTab(ArrayUtil.stringToObject(idle.getTab()));
-            idleBriefVo.setDescribe(idle.getDescr());
-            idleBriefVo.setPrice(idle.getPrice());
-            idleBriefVo.setNum(idle.getNum());
-            idleBriefVo.setState(idle.getState());
-            idleBriefVo.setCreateTime(idle.getCreateTime());
-            idleBriefVo.setPhoto(ArrayUtil.stringToObject(idle.getPhoto())[0].toString());
-            idleBriefVoList.add(idleBriefVo);
+        if(idles != null && idles.size() > 0) {
+            IdleBriefVo idleBriefVo;
+            for(Idle idle : idles){
+                idleBriefVo = new IdleBriefVo();
+                idleBriefVo.setId(idle.getId());
+                idleBriefVo.setUserId(userId);
+                idleBriefVo.setTitle(idle.getTitle());
+                idleBriefVo.setTab(ArrayUtil.stringToObject(idle.getTab()));
+                idleBriefVo.setDescribe(idle.getDescr());
+                idleBriefVo.setPrice(idle.getPrice());
+                idleBriefVo.setNum(idle.getNum());
+                idleBriefVo.setState(idle.getState());
+                idleBriefVo.setCreateTime(idle.getCreateTime());
+                idleBriefVo.setPhoto(ArrayUtil.stringToObject(idle.getPhoto())[0].toString());
+                idleBriefVoList.add(idleBriefVo);
+            }
         }
         IdleBriefListVo idleBriefListVo = new IdleBriefListVo();
         idleBriefListVo.setCurrentPage(idlePage.getCurrent());
@@ -181,22 +183,24 @@ public class IdleServiceImpl extends ServiceImpl<IdleMapper, Idle> implements Id
         idlePage = (Page<Idle>) idleMapper.selectPage(iPage, qw);
         List<Idle> idles = idlePage.getRecords();
         List<IdleBriefVo> idleBriefVoList = new ArrayList<>();
-        if(idles == null || idles.size() <= 0) return null;
-        IdleBriefVo idleBriefVo;
-        for(Idle idle : idles){
-            idleBriefVo = new IdleBriefVo();
-            idleBriefVo.setId(idle.getId());
-            idleBriefVo.setUserId(userId);
-            idleBriefVo.setTitle(idle.getTitle());
-            idleBriefVo.setTab(ArrayUtil.stringToObject(idle.getTab()));
-            idleBriefVo.setDescribe(idle.getDescr());
-            idleBriefVo.setPrice(idle.getPrice());
-            idleBriefVo.setNum(idle.getNum());
-            idleBriefVo.setState(idle.getState());
-            idleBriefVo.setCreateTime(idle.getCreateTime());
-            idleBriefVo.setPhoto(ArrayUtil.stringToObject(idle.getPhoto())[0].toString());
-            idleBriefVoList.add(idleBriefVo);
+        if(idles != null && idles.size() > 0){
+            IdleBriefVo idleBriefVo;
+            for(Idle idle : idles){
+                idleBriefVo = new IdleBriefVo();
+                idleBriefVo.setId(idle.getId());
+                idleBriefVo.setUserId(userId);
+                idleBriefVo.setTitle(idle.getTitle());
+                idleBriefVo.setTab(ArrayUtil.stringToObject(idle.getTab()));
+                idleBriefVo.setDescribe(idle.getDescr());
+                idleBriefVo.setPrice(idle.getPrice());
+                idleBriefVo.setNum(idle.getNum());
+                idleBriefVo.setState(idle.getState());
+                idleBriefVo.setCreateTime(idle.getCreateTime());
+                idleBriefVo.setPhoto(ArrayUtil.stringToObject(idle.getPhoto())[0].toString());
+                idleBriefVoList.add(idleBriefVo);
+            }
         }
+
         IdleBriefListVo idleBriefListVo = new IdleBriefListVo();
         idleBriefListVo.setCurrentPage(idlePage.getCurrent());
         idleBriefListVo.setTotal(idlePage.getTotal());
@@ -221,22 +225,24 @@ public class IdleServiceImpl extends ServiceImpl<IdleMapper, Idle> implements Id
         idlePage = (Page<Idle>) idleMapper.selectPage(iPage, qw);
         List<Idle> idles = idlePage.getRecords();
         List<IdleBriefVo> idleBriefVoList = new ArrayList<>();
-        if(idles == null || idles.size() <= 0) return null;
-        IdleBriefVo idleBriefVo;
-        for(Idle idle : idles){
-            idleBriefVo = new IdleBriefVo();
-            idleBriefVo.setId(idle.getId());
-            idleBriefVo.setUserId(idle.getUserId());
-            idleBriefVo.setTitle(idle.getTitle());
-            idleBriefVo.setTab(ArrayUtil.stringToObject(idle.getTab()));
-            idleBriefVo.setDescribe(idle.getDescr());
-            idleBriefVo.setPrice(idle.getPrice());
-            idleBriefVo.setNum(idle.getNum());
-            idleBriefVo.setState(idle.getState());
-            idleBriefVo.setCreateTime(idle.getCreateTime());
-            idleBriefVo.setPhoto(ArrayUtil.stringToObject(idle.getPhoto())[0].toString());
-            idleBriefVoList.add(idleBriefVo);
+        if(idles != null && idles.size() > 0) {
+            IdleBriefVo idleBriefVo;
+            for(Idle idle : idles){
+                idleBriefVo = new IdleBriefVo();
+                idleBriefVo.setId(idle.getId());
+                idleBriefVo.setUserId(idle.getUserId());
+                idleBriefVo.setTitle(idle.getTitle());
+                idleBriefVo.setTab(ArrayUtil.stringToObject(idle.getTab()));
+                idleBriefVo.setDescribe(idle.getDescr());
+                idleBriefVo.setPrice(idle.getPrice());
+                idleBriefVo.setNum(idle.getNum());
+                idleBriefVo.setState(idle.getState());
+                idleBriefVo.setCreateTime(idle.getCreateTime());
+                idleBriefVo.setPhoto(ArrayUtil.stringToObject(idle.getPhoto())[0].toString());
+                idleBriefVoList.add(idleBriefVo);
+            }
         }
+
         IdleBriefListVo idleBriefListVo = new IdleBriefListVo();
         idleBriefListVo.setCurrentPage(idlePage.getCurrent());
         idleBriefListVo.setTotal(idlePage.getTotal());

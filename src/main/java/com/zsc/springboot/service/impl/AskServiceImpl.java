@@ -64,22 +64,24 @@ public class AskServiceImpl extends ServiceImpl<AskMapper, Ask> implements AskSe
         queryWrapper.orderByDesc("create_time");
         askPage = (Page<Ask>) askMapper.selectPage(iPage,queryWrapper);
         List<Ask> asks = askPage.getRecords();
-        if(asks == null || asks.size() <= 0) return null;
-        AskVo askVo;
-        UserIndexVo userIndexVo = userService.getUserNameAndHImg(userId);
         List<AskVo> askVoList = new ArrayList<>();
-        for(Ask ask : asks){
-            askVo = new AskVo();
-            askVo.setId(ask.getId());
-            askVo.setUserId(userId);
-            askVo.setUserImg(userIndexVo.getImage());
-            askVo.setUserName(userIndexVo.getNickName());
-            askVo.setContent(ask.getContent());
-            askVo.setPhotos(ArrayUtil.stringToObject(ask.getPhoto()));
-            askVo.setHasResolve(ask.getHasResolve());
-            askVo.setCreateTime(ask.getCreateTime());
-            askVo.setCommentVoList(commentService.getCommentsByParentId(ask.getId()));
-            askVoList.add(askVo);
+        if(asks != null && asks.size() > 0) {
+            AskVo askVo;
+            UserIndexVo userIndexVo = userService.getUserNameAndHImg(userId);
+            for(Ask ask : asks){
+                askVo = new AskVo();
+                askVo.setId(ask.getId());
+                askVo.setUserId(userId);
+                askVo.setUserImg(userIndexVo.getImage());
+                askVo.setUserName(userIndexVo.getNickName());
+                askVo.setContent(ask.getContent());
+                askVo.setPhotos(ArrayUtil.stringToObject(ask.getPhoto()));
+                askVo.setHasResolve(ask.getHasResolve());
+                askVo.setCreateTime(ask.getCreateTime());
+                askVo.setCommentVoList(commentService.getCommentsByParentId(ask.getId()));
+                askVoList.add(askVo);
+            }
+
         }
         AskListVo askListVo = new AskListVo();
         askListVo.setCurrentPage(askPage.getCurrent());
@@ -101,24 +103,26 @@ public class AskServiceImpl extends ServiceImpl<AskMapper, Ask> implements AskSe
         queryWrapper.orderByDesc("create_time");
         askPage = (Page<Ask>) askMapper.selectPage(iPage,queryWrapper);
         List<Ask> asks = askPage.getRecords();
-        if(asks == null || asks.size() <= 0) return null;
-        AskVo askVo;
-        UserIndexVo userIndexVo;
         List<AskVo> askVoList = new ArrayList<>();
-        for(Ask ask : asks){
-            askVo = new AskVo();
-            askVo.setId(ask.getId());
-            askVo.setUserId(ask.getUserId());
-            askVo.setContent(ask.getContent());
-            userIndexVo = userService.getUserNameAndHImg(ask.getUserId());
-            askVo.setUserImg(userIndexVo.getImage());
-            askVo.setUserName(userIndexVo.getNickName());
-            askVo.setPhotos(ArrayUtil.stringToObject(ask.getPhoto()));
-            askVo.setHasResolve(ask.getHasResolve());
-            askVo.setCreateTime(ask.getCreateTime());
-            askVo.setCommentVoList(commentService.getCommentsByParentId(ask.getId()));
-            askVoList.add(askVo);
+        if(asks != null && asks.size() > 0){
+            AskVo askVo;
+            UserIndexVo userIndexVo;
+            for(Ask ask : asks){
+                askVo = new AskVo();
+                askVo.setId(ask.getId());
+                askVo.setUserId(ask.getUserId());
+                askVo.setContent(ask.getContent());
+                userIndexVo = userService.getUserNameAndHImg(ask.getUserId());
+                askVo.setUserImg(userIndexVo.getImage());
+                askVo.setUserName(userIndexVo.getNickName());
+                askVo.setPhotos(ArrayUtil.stringToObject(ask.getPhoto()));
+                askVo.setHasResolve(ask.getHasResolve());
+                askVo.setCreateTime(ask.getCreateTime());
+                askVo.setCommentVoList(commentService.getCommentsByParentId(ask.getId()));
+                askVoList.add(askVo);
+            }
         }
+
         AskListVo askListVo = new AskListVo();
         askListVo.setCurrentPage(askPage.getCurrent());
         askListVo.setTotal(askPage.getTotal());
@@ -144,22 +148,24 @@ public class AskServiceImpl extends ServiceImpl<AskMapper, Ask> implements AskSe
         queryWrapper.le("create_time",date);
         askPage = (Page<Ask>) askMapper.selectPage(iPage,queryWrapper);
         List<Ask> asks = askPage.getRecords();
-        if(asks == null || asks.size() <= 0) return null;
-        AskVo askVo;
-        UserIndexVo userIndexVo = userService.getUserNameAndHImg(userId);
         List<AskVo> askVoList = new ArrayList<>();
-        for(Ask ask : asks){
-            askVo = new AskVo();
-            askVo.setId(ask.getId());
-            askVo.setUserId(userId);
-            askVo.setUserImg(userIndexVo.getImage());
-            askVo.setUserName(userIndexVo.getNickName());
-            askVo.setContent(ask.getContent());
-            askVo.setPhotos(ArrayUtil.stringToObject(ask.getPhoto()));
-            askVo.setHasResolve(ask.getHasResolve());
-            askVo.setCreateTime(ask.getCreateTime());
-            askVo.setCommentVoList(commentService.getCommentsByParentId(ask.getId()));
-            askVoList.add(askVo);
+        if(asks != null && asks.size() > 0) {
+            AskVo askVo;
+            UserIndexVo userIndexVo = userService.getUserNameAndHImg(userId);
+            for(Ask ask : asks){
+                askVo = new AskVo();
+                askVo.setId(ask.getId());
+                askVo.setUserId(userId);
+                askVo.setUserImg(userIndexVo.getImage());
+                askVo.setUserName(userIndexVo.getNickName());
+                askVo.setContent(ask.getContent());
+                askVo.setPhotos(ArrayUtil.stringToObject(ask.getPhoto()));
+                askVo.setHasResolve(ask.getHasResolve());
+                askVo.setCreateTime(ask.getCreateTime());
+                askVo.setCommentVoList(commentService.getCommentsByParentId(ask.getId()));
+                askVoList.add(askVo);
+            }
+
         }
         AskListVo askListVo = new AskListVo();
         askListVo.setCurrentPage(askPage.getCurrent());
@@ -182,23 +188,24 @@ public class AskServiceImpl extends ServiceImpl<AskMapper, Ask> implements AskSe
         queryWrapper.le("create_time",date);
         askPage = (Page<Ask>) askMapper.selectPage(iPage,queryWrapper);
         List<Ask> asks = askPage.getRecords();
-        if(asks == null || asks.size() <= 0) return null;
-        AskVo askVo;
-        UserIndexVo userIndexVo;
         List<AskVo> askVoList = new ArrayList<>();
-        for(Ask ask : asks){
-            askVo = new AskVo();
-            askVo.setId(ask.getId());
-            askVo.setUserId(ask.getUserId());
-            askVo.setContent(ask.getContent());
-            userIndexVo = userService.getUserNameAndHImg(ask.getUserId());
-            askVo.setUserImg(userIndexVo.getImage());
-            askVo.setUserName(userIndexVo.getNickName());
-            askVo.setPhotos(ArrayUtil.stringToObject(ask.getPhoto()));
-            askVo.setHasResolve(ask.getHasResolve());
-            askVo.setCreateTime(ask.getCreateTime());
-            askVo.setCommentVoList(commentService.getCommentsByParentId(ask.getId()));
-            askVoList.add(askVo);
+        if(asks != null && asks.size() > 0) {
+            AskVo askVo;
+            UserIndexVo userIndexVo;
+            for(Ask ask : asks){
+                askVo = new AskVo();
+                askVo.setId(ask.getId());
+                askVo.setUserId(ask.getUserId());
+                askVo.setContent(ask.getContent());
+                userIndexVo = userService.getUserNameAndHImg(ask.getUserId());
+                askVo.setUserImg(userIndexVo.getImage());
+                askVo.setUserName(userIndexVo.getNickName());
+                askVo.setPhotos(ArrayUtil.stringToObject(ask.getPhoto()));
+                askVo.setHasResolve(ask.getHasResolve());
+                askVo.setCreateTime(ask.getCreateTime());
+                askVo.setCommentVoList(commentService.getCommentsByParentId(ask.getId()));
+                askVoList.add(askVo);
+            }
         }
         AskListVo askListVo = new AskListVo();
         askListVo.setCurrentPage(askPage.getCurrent());

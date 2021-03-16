@@ -175,7 +175,7 @@ public class HelpServiceImpl extends ServiceImpl<HelpMapper, Help> implements He
         helpPage = (Page<Help>) helpMapper.selectPage(iPage,qw);
         List<Help> helps = helpPage.getRecords();
         List<HelpVo> helpVos = new ArrayList<>();
-        if(helps != null || helps.size() > 0) {
+        if(helps != null && helps.size() > 0) {
             HelpVo helpVo;
 
             UserIndexVo userIndexVo;
@@ -223,7 +223,7 @@ public class HelpServiceImpl extends ServiceImpl<HelpMapper, Help> implements He
         helpPage = (Page<Help>) helpMapper.selectPage(iPage,qw);
         List<Help> helps = helpPage.getRecords();
         List<HelpVo> helpVos = new ArrayList<>();
-        if(helps != null || helps.size() > 0) {
+        if(helps != null && helps.size() > 0) {
             HelpVo helpVo;
 
             UserIndexVo userIndexVo = userService.getUserNameAndHImg(userId);
