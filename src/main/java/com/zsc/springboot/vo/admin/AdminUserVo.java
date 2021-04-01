@@ -1,4 +1,4 @@
-package com.zsc.springboot.vo;
+package com.zsc.springboot.vo.admin;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
@@ -10,18 +10,19 @@ import java.util.Date;
  *
  *
  *@Author：黄港团
- *@Since：2021/1/17 23:38
+ *@Since：2021/3/17 14:23
  */
 @Getter
 @Setter
-public class UserVo {
-    private String phone;
+public class AdminUserVo {
+    private String userId;
     private String nickName;
     private String email;
-    private Integer role;
-    private Integer state;
     private String image;
+    private String school;
+    private String schoolNum;
     private Integer faceLogin;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private Integer state;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:sss",timezone = "GTM+8")
     private Date createTime;
 }

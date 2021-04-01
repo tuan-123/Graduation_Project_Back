@@ -1,6 +1,5 @@
-package com.zsc.springboot.vo;
+package com.zsc.springboot.vo.admin;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,20 +10,17 @@ import java.util.Date;
  *
  *
  *@Author：黄港团
- *@Since：2021/2/26 16:42
+ *@Since：2021/3/31 17:06
  */
 @Setter
 @Getter
-public class IdleBriefVo {
+public class AdminIdleBriefVo {
     private Long id;
     private String userId;
     private String title;
-    private String describe;
     private Object[] tab;
-    private Integer num;
     private BigDecimal price;
-    private String state;
-    private String photo;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private Integer num;
+    private String phone;
     private Date createTime;
 }
