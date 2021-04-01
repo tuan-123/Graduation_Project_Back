@@ -2,6 +2,7 @@ package com.zsc.springboot.mapper;
 
 import com.zsc.springboot.entity.Ask;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -14,5 +15,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface AskMapper extends BaseMapper<Ask> {
-
+    @Select("select count(id) from ask")
+    long getCount();
 }

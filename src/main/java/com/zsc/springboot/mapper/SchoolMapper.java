@@ -29,4 +29,7 @@ public interface SchoolMapper extends BaseMapper<School> {
     @Select("select id as value,name as text,parent_id from school where parent_id = #{id} and deleted = 0")   // 数据库用的是name，Vo实体用的是schoolName
     List<SchoolVo> getSchoolsByProvinceId(Integer id);// 根据省份id查询该省份的所有学校
 
+    @Select("select name from school where id = #{schoolId}")
+    String getSchoolNameBySchoolId(Integer schoolId);
+
 }

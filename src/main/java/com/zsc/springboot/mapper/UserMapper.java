@@ -48,4 +48,17 @@ public interface UserMapper extends BaseMapper<User> {
     @Select("select school_id from user where phone = #{userId} limit 1")
     Integer getUserSchoolIdByUserId(String userId);
 
+    @Update("update user set state = #{state} where phone = #{userId} and deleted = 0 limit 1")
+    Integer changeStateById(String userId,Integer state);
+
+    @Update("update user set school_id = -1 where phone = #{userId} and deleted = 0 limit 1")
+    Integer unBundlingSchoolById(String userId);
+
+    @Update("update user set school_num = '-1' where phone = #{userId} and deleted = 0 limit 1")
+    Integer unBundlingSchoolNumById(String userId);
+
+    @Update("update user set email = #{email} where phone = #{userId} and deleted = 0 limit 1")
+    Integer updateEmail(String userId,String email);
+
+
 }

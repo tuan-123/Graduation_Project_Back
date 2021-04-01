@@ -32,4 +32,7 @@ public interface IdleMapper extends BaseMapper<Idle> {
     @Update("update idle set deleted = 1 where id = #{id} limit 1")
     public Integer deletedIdleById(Long id);
 
+    @Select("select count(id) from idle")
+    public long getCount();
+
 }
