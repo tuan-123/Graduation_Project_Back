@@ -6,8 +6,11 @@ import com.zsc.springboot.form.AskForm;
 import com.zsc.springboot.service.AskService;
 import com.zsc.springboot.util.ImgHandlerUtil;
 import com.zsc.springboot.vo.AskListVo;
+import com.zsc.springboot.vo.admin.AdminAskListVo;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +36,9 @@ public class AskController {
     @Autowired
     private AskService askService;
 
+    @Autowired
+    private RabbitMessagingTemplate rabbitMessagingTemplate;
+
     @RequiresAuthentication
     @PostMapping("/imageUpload")
     @ApiOperation(value = " 图片上传",response = ServerResponse.class,httpMethod = "POST")
@@ -49,6 +55,7 @@ public class AskController {
         if(result != 1){
             return ServerResponse.fail("发布失败");
         }
+        rabbitMessagingTemplate.convertAndSend("direct_exchange_orders","askCount","");
         return ServerResponse.success(null);
     }
 
@@ -119,6 +126,23 @@ public class AskController {
         return ServerResponse.success(askListVo);
     }
      */
+
+    @RequiresAuthentication
+    @RequiresRoles({"2"})
+    @GetMapping("/admin/getAskList")
+    @ApiOperation(value = "管理员获取ask列表",response = ServerResponse.class,httpMethod = "GET")
+    public ServerResponse adminGetAskList(@RequestParam("query")String query,@RequestParam("pageNum")long pageNum,@RequestParam("pageSize")long pageSize){
+        AdminAskListVo adminAskListVo = askService.adminGetAskList(query, pageNum, pageSize);
+        return ServerResponse.success(adminAskListVo);
+    }
+
+    @RequiresAuthentication
+    @GetMapping("/admin/getAskById")
+    @RequiresRoles({"2"})
+    @ApiOperation(value = "根据id获取ask详细信息",response = ServerResponse.class,httpMethod = "GET")
+    public ServerResponse adminGetAskById(@RequestParam("id") Long id){
+        return ServerResponse.success(askService.getAskByAskId(id));
+    }
 
 }
 

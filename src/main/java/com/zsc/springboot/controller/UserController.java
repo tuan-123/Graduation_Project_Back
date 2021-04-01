@@ -3,19 +3,21 @@ package com.zsc.springboot.controller;
 
 import com.zsc.springboot.common.SendEmailCode;
 import com.zsc.springboot.common.ServerResponse;
+import com.zsc.springboot.config.annotation.OperLogAnnotation;
 import com.zsc.springboot.form.FindPasswordForm;
 import com.zsc.springboot.form.LoginForm;
 import com.zsc.springboot.form.RegisterForm;
 import com.zsc.springboot.form.UpdatePsdForm;
+import com.zsc.springboot.form.admin.AddUserForm;
 import com.zsc.springboot.service.UserService;
-import com.zsc.springboot.service.impl.SchoolServiceImpl;
-import com.zsc.springboot.service.impl.UserServiceImpl;
 import com.zsc.springboot.util.*;
 import com.zsc.springboot.vo.UserDetailInfoVo;
 import com.zsc.springboot.vo.UserIndexVo;
+import com.zsc.springboot.webSocket.WebSocketEndpoint;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,14 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
+import javax.validation.constraints.Email;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.*;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -73,6 +82,17 @@ public class UserController {
         sendEmailCode.setCode(code);
         rabbitTemplate.convertAndSend("fanout_exchange","",sendEmailCode);
         return ServerResponse.success(null);
+    }
+
+    @ApiOperation(value = "关闭人脸登录接口",response = ServerResponse.class,httpMethod = "GET")
+    @RequiresAuthentication
+    @GetMapping("/closeFaceLogin")
+    public ServerResponse closeFaceLogin(@RequestParam("userId") String userId) throws Exception {
+        //从faceset移除faceToken 还未
+        Integer update = userService.removeFaceLogin(userId);
+        if(update == 1)
+            return ServerResponse.success(null);
+        return ServerResponse.fail("关闭失败");
     }
 
     @ApiOperation(value = "开启人脸登录接口",response = ServerResponse.class,httpMethod = "POST")
@@ -217,7 +237,7 @@ public class UserController {
 
     @ApiOperation(value = "退出登录",response = ServerResponse.class,httpMethod = "GET")
     @RequiresAuthentication
-    @GetMapping(value = "logout")
+    @GetMapping(value = "/logout")
     public ServerResponse logout(){
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
@@ -261,6 +281,103 @@ public class UserController {
             return ServerResponse.fail("找回密码失败");
         }
     }
+
+    @ApiOperation(value = "管理员登录",response = ServerResponse.class,httpMethod = "POST")
+    @PostMapping("/admin/login")
+    public ServerResponse adminLogin(@Validated @RequestBody LoginForm loginForm){
+        return userService.adminLogin(loginForm.getPhone(),loginForm.getPassword());
+    }
+
+    @RequiresAuthentication
+    @RequiresRoles({"2"})
+    @ApiOperation(value = "获取用户列表",response = ServerResponse.class,httpMethod = "GET")
+    @GetMapping("/admin/getUserList")
+    public ServerResponse adminGetUserList(@RequestParam("query")String query,@RequestParam("pageNum")long pageNum,@RequestParam("pageSize")long pageSize){
+        return ServerResponse.success(userService.getUserList(query,pageNum,pageSize));
+    }
+
+    @RequiresAuthentication
+    @RequiresRoles({"2"})
+    @ApiOperation(value = "修改用户状态",response = ServerResponse.class,httpMethod = "GET")
+    @GetMapping("/admin/changeStateById")
+    public ServerResponse adminChangeStateById(@RequestParam("userId")String userId,@RequestParam("state")Integer state){
+        Integer updateResult = userService.changeStateById(userId,state);
+        if(updateResult == 0)
+            return ServerResponse.fail("修改失败");
+        return ServerResponse.success(null);
+    }
+
+    @RequiresAuthentication
+    @RequiresRoles({"2"})
+    @ApiOperation(value = "删除用户",response = ServerResponse.class,httpMethod = "GET")
+    @GetMapping("/admin/deleteUserById")
+    public ServerResponse adminDeleteUserById(@RequestParam("userId")String userId){
+        Integer deleteUserById = userService.deleteUserById(userId);
+        if(deleteUserById == 0)
+            return ServerResponse.fail("删除失败");
+        return ServerResponse.success(null);
+    }
+
+    @OperLogAnnotation(operModul = "用户管理-添加用户",operType = "添加",operDesc = "添加用户")
+    @RequiresAuthentication
+    @RequiresRoles({"2"})
+    @ApiOperation(value = "添加用户",response = ServerResponse.class,httpMethod = "POST")
+    @PostMapping("/admin/addUser")
+    public ServerResponse adminAddUser(@Validated@RequestBody AddUserForm addUserForm){
+        Integer addUser = userService.addUser(addUserForm.getUserId(),addUserForm.getPassword(),addUserForm.getEmail(),addUserForm.getRole());
+        if(addUser == 1)
+            return ServerResponse.success(null);
+        return ServerResponse.fail("添加失败");
+    }
+
+    @RequiresAuthentication
+    @RequiresRoles({"2"})
+    @ApiOperation(value = "解绑学校",response = ServerResponse.class,httpMethod = "GET")
+    @GetMapping("/admin/unBundlingSchool")
+    public ServerResponse unBundlingSchool(@RequestParam("userId")String userId){
+        Integer unBundlingSchoolById = userService.unBundlingSchoolById(userId);
+        if(unBundlingSchoolById == 1)
+            return ServerResponse.success(null);
+        return ServerResponse.fail("解绑失败");
+    }
+
+    @RequiresAuthentication
+    @RequiresRoles({"2"})
+    @ApiOperation(value = "解绑学号",response = ServerResponse.class,httpMethod = "GET")
+    @GetMapping("/admin/unBundlingSchoolNum")
+    public ServerResponse unBundlingSchoolNum(@RequestParam("userId")String userId){
+        Integer unBundlingSchoolNumById = userService.unBundlingSchoolNumById(userId);
+        if(unBundlingSchoolNumById == 1)
+            return ServerResponse.success(null);
+        return ServerResponse.fail("解绑失败");
+    }
+
+    @OperLogAnnotation(operModul = "用户管理-修改邮箱",operType = "修改",operDesc = "修改邮箱")
+    @RequiresAuthentication
+    @RequiresRoles({"2"})
+    @ApiOperation(value = "修改邮箱",response = ServerResponse.class,httpMethod = "GET")
+    @GetMapping("/admin/updateEmail")
+    public ServerResponse updateEmail(@RequestParam("userId")String userId,@RequestParam("email") @Email String email){
+        Integer updateEmail = userService.updateEmail(userId,email);
+        if(updateEmail == 1)
+            return ServerResponse.success(null);
+        return ServerResponse.fail("修改失败");
+    }
+
+    @RequiresAuthentication
+    @RequiresRoles({"2"})
+    @ApiOperation(value = "获取主页数据",response = ServerResponse.class,httpMethod = "GET")
+    @GetMapping("/admin/getIndexData")
+    public ServerResponse getIndexData(){
+        HashMap<String,Object> hashMap = new HashMap<>();
+        hashMap.put("userOnline", WebSocketEndpoint.getOnlineCount());
+        hashMap.put("askCount",WebSocketEndpoint.getAskCount());
+        hashMap.put("helpCount",WebSocketEndpoint.getHelpCount());
+        hashMap.put("idleCount",WebSocketEndpoint.getIdleCount());
+        return ServerResponse.success(hashMap);
+    }
+
+
 
 }
 

@@ -6,8 +6,12 @@ import com.zsc.springboot.form.HelpForm;
 import com.zsc.springboot.service.HelpService;
 import com.zsc.springboot.util.ImgHandlerUtil;
 import com.zsc.springboot.vo.HelpListVo;
+import com.zsc.springboot.vo.admin.AdminHelpListVo;
+import com.zsc.springboot.vo.admin.AdminHelpVo;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
@@ -32,6 +36,8 @@ public class HelpController {
 
     @Autowired
     private HelpService helpService;
+    @Autowired
+    private RabbitMessagingTemplate rabbitMessagingTemplate;
 
     @ApiOperation(value = "图片上传",response = ServerResponse.class,httpMethod = "POST")
     @PostMapping("/imageUpload")
@@ -54,8 +60,10 @@ public class HelpController {
                 helpForm.getHelpDescr(),
                 helpForm.getHelpPhone(),
                 helpForm.getHelpPhoto());
-        if(result == 1)
+        if(result == 1) {
+            rabbitMessagingTemplate.convertAndSend("direct_exchange_orders","helpCount","");
             return ServerResponse.success(null);
+        }
         return ServerResponse.fail("发布失败");
     }
 
@@ -69,8 +77,6 @@ public class HelpController {
         }else {
             helpListVo = helpService.loadingMoreHelpListByUserId(userId, query, currentPage, pageSize,date);
         }
-        if(helpListVo == null)
-            return ServerResponse.fail("空空如也");
         return ServerResponse.success(helpListVo);
     }
 
@@ -84,8 +90,6 @@ public class HelpController {
         }else {
             helpListVo = helpService.loadingMoreHelpList(userId, query, currentPage, pageSize,date);
         }
-        if(helpListVo == null)
-            return ServerResponse.fail("空空如也");
         return ServerResponse.success(helpListVo);
     }
 
@@ -131,6 +135,33 @@ public class HelpController {
         else if(accept == 0)
             return ServerResponse.fail("订单已被接");
         return ServerResponse.fail("接单失败");
+    }
+
+    @ApiOperation(value = "我的接单", response = ServerResponse.class,httpMethod = "GET")
+    @RequiresAuthentication
+    @GetMapping("/GetAcceptedHelpByAcceptUserId")
+    public ServerResponse getAcceptedHelpByAcceptUserId(@RequestParam("userId")String userId,@RequestParam("query")String query,@RequestParam("currentPage")long currentPage,@RequestParam("pageSize")long pageSize,@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:sss")Date date){
+        HelpListVo helpListVo;
+        helpListVo = helpService.getAcceptedHelpByAcceptUserId(userId, query, currentPage, pageSize,date);
+        return ServerResponse.success(helpListVo);
+    }
+
+    @RequiresAuthentication
+    @RequiresRoles({"2"})
+    @GetMapping("/admin/getHelpList")
+    @ApiOperation(value = "管理员获取help列表",response = ServerResponse.class,httpMethod = "GET")
+    public ServerResponse adminGetHelpList(@RequestParam("query")String query,@RequestParam("pageNum")long pageNum,@RequestParam("pageSize")long pageSize){
+        AdminHelpListVo helpListVo = helpService.adminGetHelpList(query, pageNum, pageSize);
+        return ServerResponse.success(helpListVo);
+    }
+
+    @RequiresAuthentication
+    @GetMapping("/admin/getHelpById")
+    @RequiresRoles({"2"})
+    @ApiOperation(value = "根据id获取idle详细信息",response = ServerResponse.class,httpMethod = "GET")
+    public ServerResponse adminGetIdleById(@RequestParam("id") Long id){
+        AdminHelpVo adminHelpVo = helpService.adminGetHelpById(id);
+        return ServerResponse.success(adminHelpVo);
     }
 
 }

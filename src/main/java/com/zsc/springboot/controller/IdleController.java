@@ -12,9 +12,13 @@ import com.zsc.springboot.util.ArrayUtil;
 import com.zsc.springboot.util.ImgHandlerUtil;
 import com.zsc.springboot.vo.IdleBriefListVo;
 import com.zsc.springboot.vo.IdleDetailVo;
+import com.zsc.springboot.vo.admin.AdminIdleListVo;
+import com.zsc.springboot.vo.admin.AdminIdleVo;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -39,6 +43,8 @@ public class IdleController {
 
     @Autowired
     private IdleService idleService;
+    @Autowired
+    private RabbitMessagingTemplate rabbitMessagingTemplate;
 
     @RequiresAuthentication
     @PostMapping("/imageUpload")
@@ -54,6 +60,7 @@ public class IdleController {
     public ServerResponse idleIssue(@Validated @RequestBody IdleForm idleForm){
         Integer result = idleService.idleIssue(idleForm);
         if(result == 1){
+            rabbitMessagingTemplate.convertAndSend("direct_exchange_orders","idleCount","");
             return ServerResponse.success(null);
         }
         return ServerResponse.fail("发布失败");
@@ -166,5 +173,24 @@ public class IdleController {
             return ServerResponse.success(null);
         return ServerResponse.fail("删除失败");
     }
+
+    @RequiresAuthentication
+    @RequiresRoles({"2"})
+    @GetMapping("/admin/getIdleList")
+    @ApiOperation(value = "管理员获取idle列表",response = ServerResponse.class,httpMethod = "GET")
+    public ServerResponse adminGetIdleList(@RequestParam("query")String query,@RequestParam("pageNum")long pageNum,@RequestParam("pageSize")long pageSize){
+        AdminIdleListVo idleBriefListVo = idleService.adminGetIdleList(query, pageNum, pageSize);
+        return ServerResponse.success(idleBriefListVo);
+    }
+
+    @RequiresAuthentication
+    @GetMapping("/admin/getIdleById")
+    @RequiresRoles({"2"})
+    @ApiOperation(value = "根据id获取idle详细信息",response = ServerResponse.class,httpMethod = "GET")
+    public ServerResponse adminGetIdleById(@RequestParam("id") Long id){
+        AdminIdleVo adminIdleVo = idleService.adminGetIdleById(id);
+        return ServerResponse.success(adminIdleVo);
+    }
+
 }
 
