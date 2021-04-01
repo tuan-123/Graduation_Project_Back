@@ -26,15 +26,49 @@ public class RabbitMQConfig {
         return ExchangeBuilder.fanoutExchange("fanout_exchange").build();
     }
 
-    // 2.定义队列
+    // 2.定义队列   durable:true 表示要持久化
     @Bean
     public Queue fanout_queue_email(){
-        return new Queue("fanout_queue_email");
+        return new Queue("fanout_queue_email",true);
     }
 
     // 3.将消息队列与交换器绑定
     @Bean
     public Binding bindingEmail(){
         return BindingBuilder.bind(fanout_queue_email()).to(fanout_exchange()).with("").noargs();
+    }
+
+    //使用convertAndSend方式发送消息，消息默认就是持久化的
+
+    //======================
+    @Bean
+    public Exchange direct_exchange(){
+        return ExchangeBuilder.directExchange("direct_exchange_orders").build();
+    }
+    @Bean
+    public Queue direct_queue_askCount(){
+        return new Queue("direct_queue_orders_ask",true);
+    }
+    @Bean
+    public Binding bindingAskCount(){
+        return BindingBuilder.bind(direct_queue_askCount()).to(direct_exchange()).with("askCount").noargs();
+    }
+
+    @Bean
+    public Queue direct_queue_helpCount(){
+        return new Queue("direct_queue_orders_help",true);
+    }
+    @Bean
+    public Binding bindingHelpCount(){
+        return BindingBuilder.bind(direct_queue_helpCount()).to(direct_exchange()).with("helpCount").noargs();
+    }
+
+    @Bean
+    public Queue direct_queue_idleCount(){
+        return new Queue("direct_queue_orders_idle",true);
+    }
+    @Bean
+    public Binding bindingIdleCount(){
+        return BindingBuilder.bind(direct_queue_idleCount()).to(direct_exchange()).with("idleCount").noargs();
     }
 }
