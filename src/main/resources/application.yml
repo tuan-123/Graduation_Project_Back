@@ -38,6 +38,11 @@ spring:
     port: 25
     username: at_tuan@163.com
     password: ZWCXOZRLCPPPZARM
+    #host: smtp.qq.com
+    #port: 465
+    #username: 1278991950@qq.com
+    #password: nimaavoborgnffji
+    #protocol: smtp
     default-encoding: UTF-8
     properties:
       mail:
@@ -45,6 +50,20 @@ spring:
           connectiontimeout: 5000
           timeout: 3000
           writetimeout: 5000
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        acknowledge-mode: manual
 
 
 
