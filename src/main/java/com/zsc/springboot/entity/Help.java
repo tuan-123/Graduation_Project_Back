@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.util.Date;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -68,8 +70,13 @@ public class Help implements Serializable {
     @ApiModelProperty(value = "接单用户id")
     private String acceptUserId;
 
+    @ApiModelProperty(value = "接单时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd HH:mm:sss", timezone="GMT+8")
+    private Date acceptTime;
+
     @ApiModelProperty(value = "创建时间")
     @TableField(fill = FieldFill.INSERT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd HH:mm:sss", timezone="GMT+8")
     private Date createTime;
 
     @ApiModelProperty(value = "逻辑删除(0表示未删除，1表示删除)")
