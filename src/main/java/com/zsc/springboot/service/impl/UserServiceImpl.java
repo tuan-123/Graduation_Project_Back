@@ -1,12 +1,14 @@
 package com.zsc.springboot.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zsc.springboot.common.ServerResponse;
 import com.zsc.springboot.entity.User;
 import com.zsc.springboot.form.FindPasswordForm;
 import com.zsc.springboot.form.LoginForm;
 import com.zsc.springboot.form.RegisterForm;
 import com.zsc.springboot.mapper.UserMapper;
+import com.zsc.springboot.service.SchoolService;
 import com.zsc.springboot.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zsc.springboot.shiro.JWTToken;
@@ -16,6 +18,8 @@ import com.zsc.springboot.util.JWTUtil;
 import com.zsc.springboot.vo.UserDetailInfoVo;
 import com.zsc.springboot.vo.UserIndexVo;
 import com.zsc.springboot.vo.UserVo;
+import com.zsc.springboot.vo.admin.AdminUserListVo;
+import com.zsc.springboot.vo.admin.AdminUserVo;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.subject.Subject;
@@ -24,11 +28,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.math.BigDecimal;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -48,6 +49,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private SchoolService schoolService;
 
     @Transactional
     @Override
@@ -221,5 +224,114 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setFaceLogin(1);
         return userMapper.updateById(user);
     }
+
+    @Transactional
+    @Override
+    public Integer removeFaceLogin(String userId) {
+        User user = userMapper.selectById(userId);
+        user.setFaceLogin(0);
+        return userMapper.updateById(user);
+    }
+
+    @Override
+    public ServerResponse adminLogin(String userId, String pwd) {
+        String password = EncryptPwd.encrypt(pwd,userId);
+        // 生成签名
+        String token = JWTUtil.sign(userId,password);
+        //构造JWT token
+        JWTToken jwtToken = new JWTToken(token);
+        //shiro安全框架：获取subject对象
+        Subject subject = SecurityUtils.getSubject();
+        //设置token
+        try{
+            subject.login(jwtToken);
+        }catch (UnknownAccountException e){
+            throw new UnknownAccountException("用户名或密码错误");
+        }
+
+        UserVo userVo = getUserByUserId(userId);
+        if(userVo.getState() == 0)
+            return ServerResponse.fail("账户已锁定");
+        else if(userVo.getRole() != 2)
+            return ServerResponse.fail("您不是管理员哟!");
+        return ServerResponse.loginSuccess(userVo,token);
+    }
+
+
+
+    @Override
+    public AdminUserListVo getUserList(String query, long currentPage, long pageSize) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if(!query.isEmpty())
+            queryWrapper.like("phone",query);
+        queryWrapper.eq("role",0);
+        Page<User> IPage = new Page<>(currentPage,pageSize);
+        Page<User> userPage = (Page<User>) userMapper.selectPage(IPage,queryWrapper);
+        List<User> users = userPage.getRecords();
+        List<AdminUserVo> adminUserVos = new ArrayList<>();
+        if(users != null && users.size() > 0){
+            AdminUserVo adminUserVo;
+            for (User user : users){
+                adminUserVo = new AdminUserVo();
+                adminUserVo.setUserId(user.getPhone());
+                adminUserVo.setNickName(user.getNickName());
+                adminUserVo.setEmail(user.getEmail());
+                adminUserVo.setImage(user.getImage());
+                adminUserVo.setSchool(schoolService.getSchoolNameBySchoolId(user.getSchoolId()));
+                adminUserVo.setSchoolNum(user.getSchoolNum());
+                adminUserVo.setFaceLogin(user.getFaceLogin());
+                adminUserVo.setState(user.getState());
+                adminUserVo.setCreateTime(user.getCreateTime());
+                adminUserVos.add(adminUserVo);
+            }
+        }
+        AdminUserListVo adminUserListVo = new AdminUserListVo();
+        adminUserListVo.setCurrentPage(userPage.getCurrent());
+        adminUserListVo.setTotal(userPage.getTotal());
+        adminUserListVo.setUserVoList(adminUserVos);
+        return adminUserListVo;
+    }
+
+    @Transactional
+    @Override
+    public Integer changeStateById(String uerId, Integer state) {
+        return userMapper.changeStateById(uerId,state);
+    }
+
+    @Override
+    public Integer deleteUserById(String userId) {
+        return userMapper.deleteById(userId);
+    }
+
+    @Override
+    public Integer addUser(String userId, String pwd, String email, Integer role) {
+        User user = new User();
+        user.setPhone(userId);
+        user.setPassword(EncryptPwd.encrypt(pwd,userId));
+        user.setNickName(userId);
+        user.setEmail(email);
+        user.setRole(role);
+        user.setImage(defaultImg);
+        return userMapper.insert(user);
+    }
+
+    @Transactional
+    @Override
+    public Integer unBundlingSchoolById(String userId) {
+        return userMapper.unBundlingSchoolById(userId);
+    }
+
+    @Transactional
+    @Override
+    public Integer unBundlingSchoolNumById(String userId) {
+        return userMapper.unBundlingSchoolNumById(userId);
+    }
+
+    @Transactional
+    @Override
+    public Integer updateEmail(String userId, String email) {
+        return userMapper.updateEmail(userId,email);
+    }
+
 
 }

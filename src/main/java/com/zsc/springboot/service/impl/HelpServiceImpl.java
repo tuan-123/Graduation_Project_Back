@@ -1,6 +1,5 @@
 package com.zsc.springboot.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,12 +8,16 @@ import com.zsc.springboot.mapper.HelpMapper;
 import com.zsc.springboot.service.CommentService;
 import com.zsc.springboot.service.HelpService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zsc.springboot.service.SchoolService;
 import com.zsc.springboot.service.UserService;
 import com.zsc.springboot.util.ArrayUtil;
 import com.zsc.springboot.util.SnowflakeIdWorker;
 import com.zsc.springboot.vo.HelpListVo;
 import com.zsc.springboot.vo.HelpVo;
 import com.zsc.springboot.vo.UserIndexVo;
+import com.zsc.springboot.vo.admin.AdminHelpBriefVo;
+import com.zsc.springboot.vo.admin.AdminHelpListVo;
+import com.zsc.springboot.vo.admin.AdminHelpVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +44,8 @@ public class HelpServiceImpl extends ServiceImpl<HelpMapper, Help> implements He
     private UserService userService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private SchoolService schoolService;
 
     @Transactional
     @Override
@@ -262,10 +267,120 @@ public class HelpServiceImpl extends ServiceImpl<HelpMapper, Help> implements He
     public Integer acceptHelp(Long id, String userId) {
         Help help = helpMapper.selectById(id);
         help.setHelpState(1);
+        help.setAcceptTime(new Date());
         help.setAcceptUserId(userId);
         UpdateWrapper updateWrapper = new UpdateWrapper();
         updateWrapper.eq("id",id);
         updateWrapper.eq("help_state",0);
         return helpMapper.update(help,updateWrapper);
     }
+
+    @Override
+    public long getCount() {
+        return helpMapper.getCount();
+    }
+
+    @Override
+    public HelpListVo getAcceptedHelpByAcceptUserId(String userId, String query, long currentPage, long pageSize, Date date) {
+        Page<Help> iPage = new Page<>(currentPage,pageSize);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("accept_user_id",userId);
+        if(!query.isEmpty())
+            queryWrapper.like("help_article",query);
+        // 这里应该根据接单时间来排会比较好
+        queryWrapper.orderByDesc("accept_time");
+        if(date != null)
+            queryWrapper.le("accept_time",date);
+        Page<Help> helpPage;
+        helpPage = (Page<Help>) helpMapper.selectPage(iPage,queryWrapper);
+        List<Help> helps = helpPage.getRecords();
+        List<HelpVo> helpVos = new ArrayList<>();
+        if(helps != null && helps.size() > 0) {
+            HelpVo helpVo;
+
+            UserIndexVo userIndexVo = userService.getUserNameAndHImg(userId);
+            for(Help help : helps){
+                helpVo = new HelpVo();
+                helpVo.setId(help.getId());
+                helpVo.setUserId(userId);
+                helpVo.setUserName(userIndexVo.getNickName());
+                helpVo.setUserImg(userIndexVo.getImage());
+                helpVo.setArticle(help.getHelpArticle());
+                helpVo.setTime(help.getHelpTime());
+                helpVo.setPlace(help.getHelpPlace());
+                helpVo.setTo(help.getHelpTo());
+                helpVo.setFee(help.getHelpFee());
+                helpVo.setDescr(help.getHelpDescr());
+                helpVo.setPhone(help.getHelpPhone());
+                helpVo.setPhotos(ArrayUtil.stringToObject(help.getHelpPhoto()));
+                helpVo.setState(help.getHelpState());
+                helpVo.setAcceptUserId(help.getAcceptUserId());
+                helpVo.setCreateTime(help.getCreateTime());
+                helpVo.setCommentVoList(commentService.getCommentsByParentId(help.getId()));
+                helpVos.add(helpVo);
+            }
+        }
+
+        HelpListVo helpListVo = new HelpListVo();
+        helpListVo.setCurrentPage(helpPage.getCurrent());
+        helpListVo.setTotal(helpPage.getTotal());
+        helpListVo.setPages(helpPage.getPages());
+        helpListVo.setHelpVoList(helpVos);
+        return helpListVo;
+    }
+
+    @Override
+    public AdminHelpListVo adminGetHelpList(String query, long pageNum, long pageSize) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if(!query.isEmpty())
+            queryWrapper.like("user_id",query);
+        Page<Help> iPage = new Page<>(pageNum,pageSize);
+        Page<Help> helpPage = (Page<Help>) helpMapper.selectPage(iPage,queryWrapper);
+        List<Help> helps = helpPage.getRecords();
+        List<AdminHelpBriefVo> adminHelpBriefVos = new ArrayList<>();
+        if(helps != null){
+            AdminHelpBriefVo helpBriefVo;
+            for(Help help : helps){
+                helpBriefVo = new AdminHelpBriefVo();
+                helpBriefVo.setId(help.getId());
+                helpBriefVo.setUserId(help.getUserId());
+                helpBriefVo.setHelpArticle(help.getHelpArticle());
+                helpBriefVo.setHelpState(help.getHelpState());
+                helpBriefVo.setCreateTime(help.getCreateTime());
+                adminHelpBriefVos.add(helpBriefVo);
+            }
+        }
+        AdminHelpListVo adminHelpListVo = new AdminHelpListVo();
+        adminHelpListVo.setCurrentPage(helpPage.getCurrent());
+        adminHelpListVo.setPageSize(helpPage.getPages());
+        adminHelpListVo.setTotal(helpPage.getTotal());
+        adminHelpListVo.setHelpBriefVos(adminHelpBriefVos);
+        return adminHelpListVo;
+    }
+
+    @Override
+    public AdminHelpVo adminGetHelpById(Long id) {
+        Help help = helpMapper.selectById(id);
+        AdminHelpVo adminHelpVo = new AdminHelpVo();
+        if(help != null){
+            adminHelpVo.setId(help.getId());
+            adminHelpVo.setUserId(help.getUserId());
+            adminHelpVo.setSchool(schoolService.getSchoolNameBySchoolId(help.getSchoolId()));
+            adminHelpVo.setHelpArticle(help.getHelpArticle());
+            adminHelpVo.setHelpTime(help.getHelpTime());
+            adminHelpVo.setHelpPlace(help.getHelpPlace());
+            adminHelpVo.setHelpTo(help.getHelpTo());
+            adminHelpVo.setHelpFee(help.getHelpFee());
+            adminHelpVo.setHelpDescr(help.getHelpDescr());
+            adminHelpVo.setHelpPhone(help.getHelpPhone());
+            adminHelpVo.setHelpPhoto(ArrayUtil.stringToObject(help.getHelpPhoto()));
+            adminHelpVo.setHelpState(help.getHelpState());
+            adminHelpVo.setAcceptUserId(help.getAcceptUserId());
+            adminHelpVo.setAcceptTime(help.getAcceptTime());
+            adminHelpVo.setCreateTime(help.getCreateTime());
+        }
+        return adminHelpVo;
+    }
+
+
 }

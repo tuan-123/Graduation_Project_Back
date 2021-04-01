@@ -50,4 +50,11 @@ public class SchoolServiceImpl extends ServiceImpl<SchoolMapper, School> impleme
         }
         return allSchool;
     }
+
+    @Override
+    public String getSchoolNameBySchoolId(Integer schoolId) {
+        if(schoolId == -1)
+            return "-1";
+        return schoolMapper.getSchoolNameBySchoolId(schoolId);
+    }
 }

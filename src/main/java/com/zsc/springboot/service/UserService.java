@@ -9,6 +9,7 @@ import com.zsc.springboot.form.RegisterForm;
 import com.zsc.springboot.vo.UserDetailInfoVo;
 import com.zsc.springboot.vo.UserIndexVo;
 import com.zsc.springboot.vo.UserVo;
+import com.zsc.springboot.vo.admin.AdminUserListVo;
 
 /**
  * <p>
@@ -36,5 +37,17 @@ public interface UserService extends IService<User> {
     public Integer findPassword(FindPasswordForm findPasswordForm);
     Integer getUserSchoolIdByUserId(String userId);
     Integer addFaceLogin(String userId);
+    Integer removeFaceLogin(String userId);
+
+    ServerResponse adminLogin(String userId,String pwd);
+    AdminUserListVo getUserList(String query, long currentPage, long pageSize);
+    Integer changeStateById(String uerId,Integer state);
+    Integer deleteUserById(String userId);
+    Integer addUser(String userId,String pwd,String email,Integer role);
+    Integer unBundlingSchoolById(String userId);
+    Integer unBundlingSchoolNumById(String userId);
+    Integer updateEmail(String userId,String email);
+
+
 
 }

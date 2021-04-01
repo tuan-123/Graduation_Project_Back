@@ -6,6 +6,9 @@ import com.zsc.springboot.form.IdleForm;
 import com.zsc.springboot.vo.IdleBriefListVo;
 import com.zsc.springboot.vo.IdleBriefVo;
 import com.zsc.springboot.vo.IdleDetailVo;
+import com.zsc.springboot.vo.admin.AdminAskVo;
+import com.zsc.springboot.vo.admin.AdminIdleListVo;
+import com.zsc.springboot.vo.admin.AdminIdleVo;
 
 import java.util.Date;
 import java.util.List;
@@ -29,4 +32,7 @@ public interface IdleService extends IService<Idle> {
     public Integer downIdleById(Long id);
     public Integer deleteIdleById(Long id);
     public Integer upIdleById(Long id);
+    long getCount();
+    AdminIdleVo adminGetIdleById(Long id);
+    AdminIdleListVo adminGetIdleList(String query, long pageNum, long pageSize);
 }

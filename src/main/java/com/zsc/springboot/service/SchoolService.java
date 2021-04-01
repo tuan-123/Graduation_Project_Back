@@ -18,4 +18,5 @@ public interface SchoolService extends IService<School> {
     public boolean addProvince(String province);
     public boolean addSchool(String provinceName,String schoolName);
     public List<SchoolSelectVo> getAllSchoolSelect();
+    public String getSchoolNameBySchoolId(Integer schoolId);
 }

@@ -9,13 +9,19 @@ import com.zsc.springboot.mapper.UserMapper;
 import com.zsc.springboot.service.CommentService;
 import com.zsc.springboot.service.IdleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zsc.springboot.service.SchoolService;
 import com.zsc.springboot.service.UserService;
 import com.zsc.springboot.util.ArrayUtil;
 import com.zsc.springboot.util.SnowflakeIdWorker;
 import com.zsc.springboot.vo.IdleBriefListVo;
 import com.zsc.springboot.vo.IdleBriefVo;
 import com.zsc.springboot.vo.IdleDetailVo;
+import com.zsc.springboot.vo.admin.AdminAskVo;
+import com.zsc.springboot.vo.admin.AdminIdleBriefVo;
+import com.zsc.springboot.vo.admin.AdminIdleListVo;
+import com.zsc.springboot.vo.admin.AdminIdleVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Id;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +46,8 @@ public class IdleServiceImpl extends ServiceImpl<IdleMapper, Idle> implements Id
     private UserService userService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private SchoolService schoolService;
 
     @Transactional
     @Override
@@ -267,4 +275,67 @@ public class IdleServiceImpl extends ServiceImpl<IdleMapper, Idle> implements Id
     public Integer upIdleById(Long id){
         return idleMapper.upIdleById(id);
     }
+
+    @Override
+    public long getCount() {
+        return idleMapper.getCount();
+    }
+
+    @Override
+    public AdminIdleVo adminGetIdleById(Long id) {
+        Idle idle = idleMapper.selectById(id);
+        AdminIdleVo adminIdleVo = null;
+        if(idle != null){
+            adminIdleVo = new AdminIdleVo();
+            adminIdleVo.setId(idle.getId());
+            adminIdleVo.setUserId(idle.getUserId());
+            adminIdleVo.setSchool(schoolService.getSchoolNameBySchoolId(idle.getSchoolId()));
+            adminIdleVo.setTitle(idle.getTitle());
+            adminIdleVo.setDescribe(idle.getDescr());
+            adminIdleVo.setTab(ArrayUtil.stringToObject(idle.getTab()));
+            adminIdleVo.setPrice(idle.getPrice());
+            adminIdleVo.setNum(idle.getNum());
+            adminIdleVo.setPhone(idle.getPhone());
+            adminIdleVo.setState(idle.getState());
+            adminIdleVo.setPhoto(ArrayUtil.stringToObject(idle.getPhoto()));
+            adminIdleVo.setCreateTime(idle.getCreateTime());
+            adminIdleVo.setComments(commentService.getCommentsByParentId(id));
+        }
+        return adminIdleVo;
+    }
+
+    @Override
+    public AdminIdleListVo adminGetIdleList(String query, long pageNum, long pageSize) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if(!query.isEmpty())
+            queryWrapper.like("user_id",query);
+        Page<Idle> iPage = new Page<>(pageNum,pageSize);
+        Page<Idle> idlePage;
+        idlePage = (Page<Idle>) idleMapper.selectPage(iPage,queryWrapper);
+        List<Idle> idles = idlePage.getRecords();
+        List<AdminIdleBriefVo> adminIdleBriefVoList = new ArrayList<>();
+        if(idles!= null){
+            AdminIdleBriefVo adminIdleBriefVo;
+            for(Idle idle : idles){
+                adminIdleBriefVo = new AdminIdleBriefVo();
+                adminIdleBriefVo.setId(idle.getId());
+                adminIdleBriefVo.setUserId(idle.getUserId());
+                adminIdleBriefVo.setTitle(idle.getTitle());
+                adminIdleBriefVo.setPrice(idle.getPrice());
+                adminIdleBriefVo.setNum(idle.getNum());
+                adminIdleBriefVo.setTab(ArrayUtil.stringToObject(idle.getTab()));
+                adminIdleBriefVo.setPhone(idle.getPhone());
+                adminIdleBriefVo.setCreateTime(idle.getCreateTime());
+                adminIdleBriefVoList.add(adminIdleBriefVo);
+            }
+        }
+        AdminIdleListVo adminIdleListVo = new AdminIdleListVo();
+        adminIdleListVo.setCurrentPage(idlePage.getCurrent());
+        adminIdleListVo.setPageSize(idlePage.getPages());
+        adminIdleListVo.setTotal(idlePage.getTotal());
+        adminIdleListVo.setAdminIdleBriefVoList(adminIdleBriefVoList);
+        return adminIdleListVo;
+    }
+
+
 }

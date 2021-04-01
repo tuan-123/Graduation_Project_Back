@@ -3,6 +3,9 @@ package com.zsc.springboot.service;
 import com.zsc.springboot.entity.Ask;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zsc.springboot.vo.AskListVo;
+import com.zsc.springboot.vo.AskVo;
+import com.zsc.springboot.vo.admin.AdminAskListVo;
+import com.zsc.springboot.vo.admin.AdminAskVo;
 
 import java.util.Date;
 
@@ -21,5 +24,8 @@ public interface AskService extends IService<Ask> {
     public Integer deleteAskById(Long id);
     public AskListVo loadingMoreAskListByUserId(String userId, String query, long currentPage, long pageSize, Date date);
     public AskListVo loadingMoreAskList(String userId, String query, long currentPage, long pageSize, Date date);
+    long getCount();
+    AdminAskListVo adminGetAskList(String query,long currentPage,long pageSize);
+    AdminAskVo getAskByAskId(Long id);
 
 }

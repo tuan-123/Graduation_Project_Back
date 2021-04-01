@@ -14,6 +14,9 @@ import com.zsc.springboot.util.SnowflakeIdWorker;
 import com.zsc.springboot.vo.AskListVo;
 import com.zsc.springboot.vo.AskVo;
 import com.zsc.springboot.vo.UserIndexVo;
+import com.zsc.springboot.vo.admin.AdminAskBriefVo;
+import com.zsc.springboot.vo.admin.AdminAskListVo;
+import com.zsc.springboot.vo.admin.AdminAskVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +42,8 @@ public class AskServiceImpl extends ServiceImpl<AskMapper, Ask> implements AskSe
     private UserService userService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private SchoolService schoolService;
 
     @Transactional
     @Override
@@ -213,5 +218,56 @@ public class AskServiceImpl extends ServiceImpl<AskMapper, Ask> implements AskSe
         askListVo.setPages(askPage.getPages());
         askListVo.setAskVoList(askVoList);
         return askListVo;
+    }
+
+    @Override
+    public long getCount() {
+        return askMapper.getCount();
+    }
+
+    @Override
+    public AdminAskListVo adminGetAskList(String query, long currentPage, long pageSize) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        if(!query.isEmpty())
+            queryWrapper.like("user_id",query);
+        Page<Ask> iPage = new Page<>(currentPage,pageSize);
+        Page<Ask> askPage;
+        askPage = (Page<Ask>) askMapper.selectPage(iPage,queryWrapper);
+        List<Ask> asks = askPage.getRecords();
+        List<AdminAskBriefVo> adminAskVoList = new ArrayList<>();
+        if(asks != null && asks.size() > 0){
+            AdminAskBriefVo adminAskVo;
+            for(Ask ask : asks){
+                adminAskVo = new AdminAskBriefVo();
+                adminAskVo.setId(ask.getId());
+                adminAskVo.setUserId(ask.getUserId());
+                adminAskVo.setContent(ask.getContent());
+                adminAskVo.setCreateTime(ask.getCreateTime());
+                adminAskVoList.add(adminAskVo);
+            }
+        }
+        AdminAskListVo adminAskListVo = new AdminAskListVo();
+        adminAskListVo.setCurrentPage(askPage.getCurrent());
+        adminAskListVo.setPages(askPage.getPages());
+        adminAskListVo.setTotal(askPage.getTotal());
+        adminAskListVo.setAskVoList(adminAskVoList);
+        return adminAskListVo;
+    }
+
+    @Override
+    public AdminAskVo getAskByAskId(Long id) {
+        Ask ask = askMapper.selectById(id);
+        AdminAskVo adminAskVo = null;
+        if(ask != null){
+            adminAskVo = new AdminAskVo();
+            adminAskVo.setId(ask.getId());
+            adminAskVo.setUserId(ask.getUserId());
+            adminAskVo.setSchool(schoolService.getSchoolNameBySchoolId(ask.getSchoolId()));
+            adminAskVo.setContent(ask.getContent());
+            adminAskVo.setPhotos(ArrayUtil.stringToObject(ask.getPhoto()));
+            adminAskVo.setCreateTime(ask.getCreateTime());
+            adminAskVo.setCommentVoList(commentService.getCommentsByParentId(id));
+        }
+        return adminAskVo;
     }
 }

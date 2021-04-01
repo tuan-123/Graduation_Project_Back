@@ -3,6 +3,8 @@ package com.zsc.springboot.service;
 import com.zsc.springboot.entity.Help;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zsc.springboot.vo.HelpListVo;
+import com.zsc.springboot.vo.admin.AdminHelpListVo;
+import com.zsc.springboot.vo.admin.AdminHelpVo;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -23,4 +25,8 @@ public interface HelpService extends IService<Help> {
     public HelpListVo loadingMoreHelpList(String userId, String query, long currentPage, long pageSize, Date date);
     public HelpListVo loadingMoreHelpListByUserId(String userId, String query, long currentPage, long pageSize, Date date);
     public Integer acceptHelp(Long id,String userId);
+    long getCount();
+    HelpListVo getAcceptedHelpByAcceptUserId(String userId,String query,long currentPage,long pageSize,Date date);
+    AdminHelpListVo adminGetHelpList(String query,long pageNum,long pageSize);
+    AdminHelpVo adminGetHelpById(Long id);
 }
