@@ -3,6 +3,12 @@ package com.zsc.springboot.common;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+/**
+ *
+ *
+ *@Author：黄港团
+ *@Since：2021/1/12 16:12
+ */
 @Data
 public class ServerResponse {
 

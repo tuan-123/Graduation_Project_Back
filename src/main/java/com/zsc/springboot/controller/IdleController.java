@@ -4,6 +4,7 @@ package com.zsc.springboot.controller;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zsc.springboot.common.SendEmailCode;
 import com.zsc.springboot.common.ServerResponse;
+import com.zsc.springboot.config.annotation.OperLogAnnotation;
 import com.zsc.springboot.entity.Idle;
 import com.zsc.springboot.form.IdleForm;
 import com.zsc.springboot.service.IdleService;
@@ -190,6 +191,18 @@ public class IdleController {
     public ServerResponse adminGetIdleById(@RequestParam("id") Long id){
         AdminIdleVo adminIdleVo = idleService.adminGetIdleById(id);
         return ServerResponse.success(adminIdleVo);
+    }
+
+    @OperLogAnnotation(operModul = "闲置管理",operType = "删除",operDesc = "删除闲置")
+    @ApiOperation(value = "管理员根据id删除商品",response = ServerResponse.class,httpMethod = "GET")
+    @RequiresAuthentication
+    @RequiresRoles({"2"})
+    @GetMapping("/admin/deleteIdleById")
+    public ServerResponse adminDeleteIdleById(@RequestParam("id")Long id){
+        Integer result = idleService.deleteIdleById(id);
+        if (result == 1)
+            return ServerResponse.success(null);
+        return ServerResponse.fail("删除失败");
     }
 
 }

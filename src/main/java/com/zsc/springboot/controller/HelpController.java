@@ -2,6 +2,7 @@ package com.zsc.springboot.controller;
 
 
 import com.zsc.springboot.common.ServerResponse;
+import com.zsc.springboot.config.annotation.OperLogAnnotation;
 import com.zsc.springboot.form.HelpForm;
 import com.zsc.springboot.service.HelpService;
 import com.zsc.springboot.util.ImgHandlerUtil;
@@ -162,6 +163,18 @@ public class HelpController {
     public ServerResponse adminGetIdleById(@RequestParam("id") Long id){
         AdminHelpVo adminHelpVo = helpService.adminGetHelpById(id);
         return ServerResponse.success(adminHelpVo);
+    }
+
+    @OperLogAnnotation(operModul = "帮代管理",operType = "删除",operDesc = "删除帮代")
+    @ApiOperation(value = "管路员根据id删除", response = ServerResponse.class,httpMethod = "GET")
+    @RequiresAuthentication
+    @RequiresRoles({"2"})
+    @GetMapping("/admin/deleteHelpById")
+    public ServerResponse adminDeleteHelpById(@RequestParam("id")Long id){
+        Integer deleted = helpService.deleteHelpById(id);
+        if(deleted == 1)
+            return ServerResponse.success(null);
+        return ServerResponse.fail("删除失败");
     }
 
 }

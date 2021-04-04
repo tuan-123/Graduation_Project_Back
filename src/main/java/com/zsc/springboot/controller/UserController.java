@@ -88,7 +88,10 @@ public class UserController {
     @RequiresAuthentication
     @GetMapping("/closeFaceLogin")
     public ServerResponse closeFaceLogin(@RequestParam("userId") String userId) throws Exception {
-        //从faceset移除faceToken 还未
+        String faceToken = userService.getFaceTokenByUserId(userId);
+        boolean remove = FacePPUtil.remoteFaceFromFaceSet(AESUtil.encrypt(faceToken,userId),outerId);
+        if(!remove)
+            return ServerResponse.fail("关闭失败");
         Integer update = userService.removeFaceLogin(userId);
         if(update == 1)
             return ServerResponse.success(null);
@@ -101,7 +104,9 @@ public class UserController {
     public ServerResponse addFaceLogin(MultipartFile multipartFile,String userId) throws Exception {
         if(userId == null || userId.length() <= 0)
             return ServerResponse.fail("用户Id不能为空");
-        String faceToken = FacePPUtil.imgToFaceToken(multipartFile);
+        //System.out.println(FacePPUtil.imgToFaceToken(ImgCompressUtil.compressPicForScale(multipartFile.getBytes(),500)));
+
+        String faceToken = FacePPUtil.imgToFaceToken(ImgCompressUtil.compressPicForScale(multipartFile.getBytes(),500));
         if(faceToken.equals("-1"))
             return ServerResponse.fail("识别到多个人脸");
         boolean addFaceTokenToFaceSet = FacePPUtil.addFaceTokenToFaceSet(faceToken, outerId);
@@ -110,10 +115,12 @@ public class UserController {
         boolean addUserIDToFaceToken = FacePPUtil.addUserIDToFaceToken(userId, faceToken);
         if(!addUserIDToFaceToken)
             return ServerResponse.fail("Add USERID Fail");
-        Integer update = userService.addFaceLogin(userId);
-        if(update != 1)
+        Integer update = userService.addFaceLogin(userId,faceToken);
+        if(update != 1) {
+            FacePPUtil.remoteFaceFromFaceSet(AESUtil.decrypt(faceToken, userId), outerId);
             return ServerResponse.fail("失败");
-        // 注意此处没对上方已生成的faceToken等进行撤销
+        }
+
         return ServerResponse.success(null);
     }
 
@@ -132,7 +139,7 @@ public class UserController {
     @ApiOperation(value = "登录接口",response = ServerResponse.class,httpMethod = "POST")
     @PostMapping("/faceLogin")
     public ServerResponse faceLogin(MultipartFile multipartFile) throws Exception {
-        String faceToken = FacePPUtil.imgToFaceToken(multipartFile);
+        String faceToken = FacePPUtil.imgToFaceToken(ImgCompressUtil.compressPicForScale(multipartFile.getBytes(),500));
         if(faceToken != null){
             String userId = FacePPUtil.searchFaceByFaceToken(faceToken,outerId);
             if(userId == null || userId.equals("-1")){
@@ -296,6 +303,7 @@ public class UserController {
         return ServerResponse.success(userService.getUserList(query,pageNum,pageSize));
     }
 
+    @OperLogAnnotation(operType = "修改",operModul = "用户管理",operDesc = "修改用户状态")
     @RequiresAuthentication
     @RequiresRoles({"2"})
     @ApiOperation(value = "修改用户状态",response = ServerResponse.class,httpMethod = "GET")
@@ -307,18 +315,29 @@ public class UserController {
         return ServerResponse.success(null);
     }
 
+    @OperLogAnnotation(operType = "删除",operModul = "用户管理",operDesc = "删除用户")
     @RequiresAuthentication
     @RequiresRoles({"2"})
     @ApiOperation(value = "删除用户",response = ServerResponse.class,httpMethod = "GET")
     @GetMapping("/admin/deleteUserById")
     public ServerResponse adminDeleteUserById(@RequestParam("userId")String userId){
+        String faceToken = userService.getFaceTokenByUserId(userId);
+        if(faceToken == null || ("").equals(faceToken)){
+            try {
+                FacePPUtil.remoteFaceFromFaceSet(AESUtil.decrypt(faceToken,userId),outerId);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ServerResponse.fail("删除失败");
+            }
+            userService.removeFaceLogin(userId);
+        }
         Integer deleteUserById = userService.deleteUserById(userId);
         if(deleteUserById == 0)
             return ServerResponse.fail("删除失败");
         return ServerResponse.success(null);
     }
 
-    @OperLogAnnotation(operModul = "用户管理-添加用户",operType = "添加",operDesc = "添加用户")
+    @OperLogAnnotation(operModul = "用户管理",operType = "添加",operDesc = "添加用户")
     @RequiresAuthentication
     @RequiresRoles({"2"})
     @ApiOperation(value = "添加用户",response = ServerResponse.class,httpMethod = "POST")
@@ -330,6 +349,7 @@ public class UserController {
         return ServerResponse.fail("添加失败");
     }
 
+    @OperLogAnnotation(operModul = "用户管理",operType = "修改",operDesc = "解绑用户学校")
     @RequiresAuthentication
     @RequiresRoles({"2"})
     @ApiOperation(value = "解绑学校",response = ServerResponse.class,httpMethod = "GET")
@@ -341,6 +361,7 @@ public class UserController {
         return ServerResponse.fail("解绑失败");
     }
 
+    @OperLogAnnotation(operModul = "用户管理",operType = "修改",operDesc = "解绑用户学号")
     @RequiresAuthentication
     @RequiresRoles({"2"})
     @ApiOperation(value = "解绑学号",response = ServerResponse.class,httpMethod = "GET")
@@ -352,7 +373,7 @@ public class UserController {
         return ServerResponse.fail("解绑失败");
     }
 
-    @OperLogAnnotation(operModul = "用户管理-修改邮箱",operType = "修改",operDesc = "修改邮箱")
+    @OperLogAnnotation(operModul = "用户管理",operType = "修改",operDesc = "修改用户所绑定邮箱")
     @RequiresAuthentication
     @RequiresRoles({"2"})
     @ApiOperation(value = "修改邮箱",response = ServerResponse.class,httpMethod = "GET")

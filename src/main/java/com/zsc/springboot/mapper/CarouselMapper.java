@@ -20,7 +20,7 @@ import java.util.List;
 @Repository
 public interface CarouselMapper extends BaseMapper<Carousel> {
 
-    @Select("select id, image as img,address as url, create_time from carousel where deleted = 0")
+    @Select("select id, image as img,address as url, create_time from carousel where deleted = 0 order by create_time desc")
     List<CarouselMapVo> getCarouselMapList();
 
     @Update("update carousel set deleted = 1 where id = #{id} limit 1")

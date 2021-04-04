@@ -169,6 +169,7 @@ public class HelpServiceImpl extends ServiceImpl<HelpMapper, Help> implements He
         Integer schoolId = userService.getUserSchoolIdByUserId(userId);
         Page<Help> iPage = new Page<>(currentPage,pageSize);
         QueryWrapper qw = new QueryWrapper();
+        qw.eq("help_state",0);
         qw.eq("school_id",schoolId);
         qw.or();
         qw.eq("accept_user_id",userId);
@@ -297,12 +298,12 @@ public class HelpServiceImpl extends ServiceImpl<HelpMapper, Help> implements He
         List<HelpVo> helpVos = new ArrayList<>();
         if(helps != null && helps.size() > 0) {
             HelpVo helpVo;
-
-            UserIndexVo userIndexVo = userService.getUserNameAndHImg(userId);
+            UserIndexVo userIndexVo;
             for(Help help : helps){
                 helpVo = new HelpVo();
                 helpVo.setId(help.getId());
                 helpVo.setUserId(userId);
+                userIndexVo = userService.getUserNameAndHImg(help.getUserId());
                 helpVo.setUserName(userIndexVo.getNickName());
                 helpVo.setUserImg(userIndexVo.getImage());
                 helpVo.setArticle(help.getHelpArticle());
@@ -332,6 +333,7 @@ public class HelpServiceImpl extends ServiceImpl<HelpMapper, Help> implements He
     @Override
     public AdminHelpListVo adminGetHelpList(String query, long pageNum, long pageSize) {
         QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.orderByDesc("create_time");
         if(!query.isEmpty())
             queryWrapper.like("user_id",query);
         Page<Help> iPage = new Page<>(pageNum,pageSize);
@@ -378,6 +380,7 @@ public class HelpServiceImpl extends ServiceImpl<HelpMapper, Help> implements He
             adminHelpVo.setAcceptUserId(help.getAcceptUserId());
             adminHelpVo.setAcceptTime(help.getAcceptTime());
             adminHelpVo.setCreateTime(help.getCreateTime());
+            adminHelpVo.setCommentVoList(commentService.getCommentsByParentId(id));
         }
         return adminHelpVo;
     }

@@ -10,6 +10,13 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ *
+ *
+ *@Author：黄港团
+ *@Since：2021/4/3 16:08
+ */
+
 public class IPUtil {
 
     public static String getIpAddress(HttpServletRequest request) {

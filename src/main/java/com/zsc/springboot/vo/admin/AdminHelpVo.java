@@ -1,11 +1,13 @@
 package com.zsc.springboot.vo.admin;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zsc.springboot.vo.CommentVo;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -29,9 +31,10 @@ public class AdminHelpVo {
     private Object[] helpPhoto;
     private Integer helpState;
     private String acceptUserId;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:sss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date acceptTime;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:sss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;
+    private List<CommentVo> commentVoList;
 
 }

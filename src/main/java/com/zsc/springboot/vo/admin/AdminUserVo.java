@@ -23,6 +23,6 @@ public class AdminUserVo {
     private String schoolNum;
     private Integer faceLogin;
     private Integer state;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:sss",timezone = "GTM+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GTM+8")
     private Date createTime;
 }

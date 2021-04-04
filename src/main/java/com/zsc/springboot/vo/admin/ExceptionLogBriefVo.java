@@ -21,6 +21,6 @@ public class ExceptionLogBriefVo {
     private String operMethod;
     private String operUri;
     private String operIp;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:sss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;
 }

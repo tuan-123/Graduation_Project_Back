@@ -43,15 +43,16 @@ public class OperLogServiceImpl extends ServiceImpl<OperLogMapper, OperLog> impl
     @Override
     public OperLogListVo getOperLogBriefList(String query, long pageNum, long pageSize, Date start, Date end) {
         QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.orderByDesc("create_time");
 
         if(!query.isEmpty())
             queryWrapper.like("oper_desc",query);
 
         if(start != null)
-            queryWrapper.le("create_time",start);
+            queryWrapper.ge("create_time",start);
 
         if(end != null){
-            queryWrapper.ge("create_time",end);
+            queryWrapper.le("create_time",end);
         }
 
         Page<OperLog> iPage = new Page<>(pageNum,pageSize);

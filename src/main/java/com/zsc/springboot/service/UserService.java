@@ -36,8 +36,9 @@ public interface UserService extends IService<User> {
     public Integer checkByUserIdAndEmail(String userId,String email);
     public Integer findPassword(FindPasswordForm findPasswordForm);
     Integer getUserSchoolIdByUserId(String userId);
-    Integer addFaceLogin(String userId);
+    Integer addFaceLogin(String userId,String faceToken);
     Integer removeFaceLogin(String userId);
+    String getFaceTokenByUserId(String userId);
 
     ServerResponse adminLogin(String userId,String pwd);
     AdminUserListVo getUserList(String query, long currentPage, long pageSize);

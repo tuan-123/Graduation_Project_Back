@@ -7,6 +7,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
+
+/**
+ *
+ *
+ *@Author：黄港团
+ *@Since：2021/4/3 16:09
+ */
 @Component
 public class QQWry {
     private static class QIndex {

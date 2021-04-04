@@ -61,6 +61,9 @@ public class User implements Serializable {
     @ApiModelProperty(value = "是否开启人脸登录；0未开启，1开启")
     private Integer faceLogin;
 
+    @ApiModelProperty(value = "face_token")
+    private String faceToken;
+
     @ApiModelProperty(value = "创建时间")
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;

@@ -1,5 +1,11 @@
 package com.zsc.springboot.common;
 
+/**
+ *
+ *
+ *@Author：黄港团
+ *@Since：2021/1/12 16:12
+ */
 public enum ResponseCode {
 
     SUCCESS(200,"操作成功"),

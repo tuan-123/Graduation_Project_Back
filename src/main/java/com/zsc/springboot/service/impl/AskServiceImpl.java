@@ -228,6 +228,7 @@ public class AskServiceImpl extends ServiceImpl<AskMapper, Ask> implements AskSe
     @Override
     public AdminAskListVo adminGetAskList(String query, long currentPage, long pageSize) {
         QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.orderByDesc("create_time");
         if(!query.isEmpty())
             queryWrapper.like("user_id",query);
         Page<Ask> iPage = new Page<>(currentPage,pageSize);

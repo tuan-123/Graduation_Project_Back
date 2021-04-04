@@ -64,6 +64,31 @@ public class FacePPUtil {
         return true;
     }
 
+    public static String imgToFaceToken(byte[] file) throws Exception {
+        HashMap<String, String> map = new HashMap<>();
+        HashMap<String, byte[]> byteMap = new HashMap<>();
+        map.put("api_key", API_KEY);
+        map.put("api_secret", API_SECRET);
+        map.put("return_landmark", "1");
+        map.put("return_attributes", "gender,age,smiling,headpose,facequality,blur,eyestatus,emotion,ethnicity,beauty,mouthstatus,eyegaze,skinstatus");
+        byteMap.put("image_file", file);
+        byte[] bacd = post(GET_FACETOKEN_FROM_IMAGE_URL,map,byteMap);
+        String str = new String(bacd);
+        if(str.indexOf("error_message") != -1)
+            throw new Exception("人脸识别请求失败");
+        //str转换为json对象
+        JSONObject jsonObject = JSONObject.parseObject(str);
+        int num = jsonObject.getIntValue("face_num");
+        if(num == 1){
+            JSONArray array = (JSONArray) jsonObject.get("faces");
+            JSONObject face = (JSONObject) array.get(0);
+            String faceToken = face.getString("face_token");
+            return faceToken;
+        }else{
+            return "-1";
+        }
+    }
+
     /**
      *  根据图片文件将图片生成对应的facetoken
      * @param file
@@ -183,13 +208,14 @@ public class FacePPUtil {
         HashMap<String,String> map = new HashMap<>();
         map.put("api_key",API_KEY);
         map.put("api_secret",API_SECRET);
-        map.put("out_id",outerId);
+        map.put("outer_id",outerId);
         map.put("face_tokens",faceToken);
         byte[] bacd = post(FACE_ADD_FACETOKEN_TO_FACESET_URL,map,null);
         String str = new String(bacd);
-        //System.out.println(str);
-        if(str.indexOf("error_message") != -1)
+        System.out.println(str);
+        if(str.indexOf("error_message") != -1) {
             throw new Exception("人脸识别请求错误");
+        }
         return true;
     }
 

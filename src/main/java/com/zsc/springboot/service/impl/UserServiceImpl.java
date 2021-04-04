@@ -12,6 +12,7 @@ import com.zsc.springboot.service.SchoolService;
 import com.zsc.springboot.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zsc.springboot.shiro.JWTToken;
+import com.zsc.springboot.util.AESUtil;
 import com.zsc.springboot.util.EmailCodeUtil;
 import com.zsc.springboot.util.EncryptPwd;
 import com.zsc.springboot.util.JWTUtil;
@@ -28,6 +29,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -219,18 +226,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Transactional
     @Override
-    public Integer addFaceLogin(String userId) {
-        User user = userMapper.selectById(userId);
-        user.setFaceLogin(1);
-        return userMapper.updateById(user);
+    public Integer addFaceLogin(String userId,String faceToken) {
+        try {
+            return userMapper.addFaceLogin(userId, AESUtil.encrypt(faceToken,userId));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     @Transactional
     @Override
     public Integer removeFaceLogin(String userId) {
-        User user = userMapper.selectById(userId);
-        user.setFaceLogin(0);
-        return userMapper.updateById(user);
+        return userMapper.removeFaceLogin(userId);
+    }
+
+    @Override
+    public String getFaceTokenByUserId(String userId) {
+        return userMapper.getFaceTokeByUserId(userId);
     }
 
     @Override
@@ -262,6 +285,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public AdminUserListVo getUserList(String query, long currentPage, long pageSize) {
         QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.orderByDesc("create_time");
         if(!query.isEmpty())
             queryWrapper.like("phone",query);
         queryWrapper.eq("role",0);

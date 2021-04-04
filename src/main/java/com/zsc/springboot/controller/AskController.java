@@ -2,6 +2,7 @@ package com.zsc.springboot.controller;
 
 
 import com.zsc.springboot.common.ServerResponse;
+import com.zsc.springboot.config.annotation.OperLogAnnotation;
 import com.zsc.springboot.form.AskForm;
 import com.zsc.springboot.service.AskService;
 import com.zsc.springboot.util.ImgHandlerUtil;
@@ -142,6 +143,17 @@ public class AskController {
     @ApiOperation(value = "根据id获取ask详细信息",response = ServerResponse.class,httpMethod = "GET")
     public ServerResponse adminGetAskById(@RequestParam("id") Long id){
         return ServerResponse.success(askService.getAskByAskId(id));
+    }
+
+    @OperLogAnnotation(operModul = "提问管理",operType = "删除",operDesc = "删除提问")
+    @RequiresAuthentication
+    @GetMapping("/admin/deleteAskById")
+    @ApiOperation(value = "管理员根据id删除",response = ServerResponse.class,httpMethod = "GET")
+    public ServerResponse adminDeleteAskById(@RequestParam("id")Long id){
+        Integer deleted = askService.deleteAskById(id);
+        if(deleted == 1)
+            return ServerResponse.success(null);
+        return ServerResponse.fail("删除失败");
     }
 
 }

@@ -5,6 +5,13 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ *
+ *
+ *@Author：黄港团
+ *@Since：2021/3/31 16:07
+ */
+
 public class SessionPool {
     public static Map<String, Session> sessions = new ConcurrentHashMap<>();
 

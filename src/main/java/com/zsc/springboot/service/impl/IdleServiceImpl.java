@@ -307,6 +307,7 @@ public class IdleServiceImpl extends ServiceImpl<IdleMapper, Idle> implements Id
     @Override
     public AdminIdleListVo adminGetIdleList(String query, long pageNum, long pageSize) {
         QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.orderByDesc("create_time");
         if(!query.isEmpty())
             queryWrapper.like("user_id",query);
         Page<Idle> iPage = new Page<>(pageNum,pageSize);

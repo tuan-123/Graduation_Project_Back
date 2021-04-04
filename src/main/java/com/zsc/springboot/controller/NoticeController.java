@@ -2,6 +2,7 @@ package com.zsc.springboot.controller;
 
 
 import com.zsc.springboot.common.ServerResponse;
+import com.zsc.springboot.config.annotation.OperLogAnnotation;
 import com.zsc.springboot.form.admin.NoticeForm;
 import com.zsc.springboot.form.admin.UpdateNoticeForm;
 import com.zsc.springboot.service.NoticeService;
@@ -30,6 +31,7 @@ public class NoticeController {
     @Autowired
     private NoticeService noticeService;
 
+    @OperLogAnnotation(operModul = "公告管理",operType = "添加",operDesc = "添加公告")
     @RequiresAuthentication
     @RequiresRoles({"2"})
     @ApiOperation(value = "添加公告",response = ServerResponse.class,httpMethod = "POST")
@@ -50,6 +52,7 @@ public class NoticeController {
         return ServerResponse.success(adminGetNotice);
     }
 
+    @OperLogAnnotation(operModul = "公告管理",operType = "删除",operDesc = "删除公告")
     @RequiresAuthentication
     @RequiresRoles({"2"})
     @ApiOperation(value = "删除公告",response = ServerResponse.class,httpMethod = "GET")
@@ -61,6 +64,7 @@ public class NoticeController {
         return ServerResponse.fail("删除失败");
     }
 
+    @OperLogAnnotation(operModul = "公告管理",operType = "修改",operDesc = "修改公告")
     @RequiresAuthentication
     @RequiresRoles({"2"})
     @ApiOperation(value = "修改公告",response = ServerResponse.class,httpMethod = "POST")

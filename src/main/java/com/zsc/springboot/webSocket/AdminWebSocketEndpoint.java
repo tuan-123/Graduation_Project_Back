@@ -47,7 +47,7 @@ public class AdminWebSocketEndpoint {
                 Map<String,Object> params = new HashMap<String,Object>();
                 params.put("type","pong");
                 session.getBasicRemote().sendText(JSON.toJSONString(params));
-                System.out.println("应答客户端的消息" + JSON.toJSONString(params));
+                //System.out.println("应答客户端的消息" + JSON.toJSONString(params));
             }catch (Exception e){
                 e.printStackTrace();
             }

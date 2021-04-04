@@ -29,7 +29,7 @@ public class AdminIdleVo {
     private String phone;
     private Object[] photo;
     private String state;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:sss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;
     private List<CommentVo> comments;
 }

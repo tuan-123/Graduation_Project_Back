@@ -60,5 +60,14 @@ public interface UserMapper extends BaseMapper<User> {
     @Update("update user set email = #{email} where phone = #{userId} and deleted = 0 limit 1")
     Integer updateEmail(String userId,String email);
 
+    @Update("update user set face_login = 1, face_token = #{faceToken} where phone = #{userId} limit 1")
+    Integer addFaceLogin(String userId,String faceToken);
+
+    @Update("update user set face_login = 0, face_token = '' where phone = #{userId} limit 1")
+    Integer removeFaceLogin(String userId);
+
+    @Select("select face_token from user where phone = #{userId} limit 1")
+    String getFaceTokeByUserId(String userId);
+
 
 }

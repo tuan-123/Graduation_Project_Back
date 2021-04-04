@@ -1,5 +1,11 @@
 package com.zsc.springboot.util;
 
+/**
+ *
+ *
+ *@Author：黄港团
+ *@Since：2021/4/3 16:09
+ */
 public class IPZone {
     private final String ip;
     private String mainInfo = "";

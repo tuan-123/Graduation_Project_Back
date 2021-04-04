@@ -2,6 +2,7 @@ package com.zsc.springboot.controller;
 
 
 import com.zsc.springboot.common.ServerResponse;
+import com.zsc.springboot.config.annotation.OperLogAnnotation;
 import com.zsc.springboot.service.CarouselService;
 import com.zsc.springboot.util.ImgHandlerUtil;
 import io.swagger.annotations.ApiOperation;
@@ -30,6 +31,7 @@ public class CarouselController {
     @Autowired
     private CarouselService carouselService;
 
+    @OperLogAnnotation(operModul = "轮播图管理",operType = "添加",operDesc = "添加轮播图")
     @RequiresAuthentication
     @RequiresRoles({"2"})
     @ApiOperation(value = "添加轮播图",response = ServerResponse.class,httpMethod = "POST")
@@ -50,6 +52,7 @@ public class CarouselController {
         return ServerResponse.success(carouselService.getCarouselMapList());
     }
 
+    @OperLogAnnotation(operModul = "轮播图管理",operType = "删除",operDesc = "删除轮播图")
     @RequiresAuthentication
     @RequiresRoles({"2"})
     @ApiOperation(value = "删除轮播图",response = ServerResponse.class,httpMethod = "GET")

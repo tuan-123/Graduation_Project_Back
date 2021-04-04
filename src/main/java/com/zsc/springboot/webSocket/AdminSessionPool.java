@@ -8,6 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ *
+ *
+ *@Author：黄港团
+ *@Since：2021/3/17 16:08
+ */
 public class AdminSessionPool {
     public static Map<String, Session> sessions = new ConcurrentHashMap<>();
 

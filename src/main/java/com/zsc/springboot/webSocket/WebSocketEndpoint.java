@@ -13,6 +13,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ *
+ *@Author：黄港团
+ *@Since：2021/3/31 16:07
+ */
+
 // ws://localhost:8087/webSocket/用户id(参数)
 @ServerEndpoint(value = "/webSocket/{userId}") // 对外暴露
 @Component
