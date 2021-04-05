@@ -1,7 +1,9 @@
 package com.zsc.springboot.rabbitMq;
 
 import com.rabbitmq.client.Channel;
+import com.zsc.springboot.common.AcceptHelp;
 import com.zsc.springboot.common.SendEmailCode;
+import com.zsc.springboot.service.HelpService;
 import com.zsc.springboot.webSocket.WebSocketEndpoint;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.Exchange;
@@ -34,6 +36,9 @@ public class RabbitMQService {
         this.fromUser = from;
     }
 
+    @Autowired
+    private HelpService helpService;
+
 
     /*@RabbitListener(bindings = @QueueBinding(value =
                                 @Queue("fanout_queue_email"),exchange =
@@ -42,7 +47,7 @@ public class RabbitMQService {
     public void psubConsumerEmailAno(SendEmailCode sendEmailCode, Message message, Channel channel) throws IOException {
        try {
             //String text = "您的本次注册验证码为：" + sendEmailCode.getCode() + ",有效时间为5分钟。\n祝您生活愉快！";
-            String text = sendEmailCode.getCode();
+            String text = "the Verification Code is " + sendEmailCode.getCode();
             SimpleMailMessage msg = new SimpleMailMessage();
             msg.setFrom(fromUser);
             msg.setTo(sendEmailCode.getEmail());
@@ -94,4 +99,25 @@ public class RabbitMQService {
             channel.basicNack(message.getMessageProperties().getDeliveryTag(),false,true);
         }
     }
+
+    @RabbitListener(bindings = @QueueBinding(value =
+                                @Queue("fanout_queue_accept_order"),exchange =
+                                @Exchange(value = "fanout_exchange_accept_order",type = "fanout")))
+    public void psubAcceptOrderAno(AcceptHelp acceptHelp, Message message, Channel channel) throws IOException {
+        try {
+            String to = helpService.getUserEmailByHelpId(acceptHelp.getId());
+            String text = "Your Help Order Is Accepted by " + acceptHelp.getAcceptUserId();
+            SimpleMailMessage msg = new SimpleMailMessage();
+            msg.setFrom(fromUser);
+            msg.setTo(to);
+            msg.setSubject(subject);
+            msg.setText(text);
+            javaMailSender.send(msg);
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            channel.basicNack(message.getMessageProperties().getDeliveryTag(),false,true);
+        }
+    }
+
 }

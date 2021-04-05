@@ -1,6 +1,7 @@
 package com.zsc.springboot.controller;
 
 
+import com.zsc.springboot.common.AcceptHelp;
 import com.zsc.springboot.common.ServerResponse;
 import com.zsc.springboot.config.annotation.OperLogAnnotation;
 import com.zsc.springboot.form.HelpForm;
@@ -131,9 +132,13 @@ public class HelpController {
     @GetMapping("/acceptHelp")
     public ServerResponse acceptHelp(@RequestParam("id")Long id,@RequestParam("userId")String userId){
         Integer accept = helpService.acceptHelp(id,userId);
-        if(accept == 1)
+        if(accept == 1) {
+            AcceptHelp acceptHelp = new AcceptHelp();
+            acceptHelp.setId(id);
+            acceptHelp.setAcceptUserId(userId);
+            rabbitMessagingTemplate.convertAndSend("fanout_exchange_accept_order","",acceptHelp);
             return ServerResponse.success(null);
-        else if(accept == 0)
+        } else if(accept == 0)
             return ServerResponse.fail("订单已被接");
         return ServerResponse.fail("接单失败");
     }

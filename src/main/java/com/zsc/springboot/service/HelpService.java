@@ -29,4 +29,6 @@ public interface HelpService extends IService<Help> {
     HelpListVo getAcceptedHelpByAcceptUserId(String userId,String query,long currentPage,long pageSize,Date date);
     AdminHelpListVo adminGetHelpList(String query,long pageNum,long pageSize);
     AdminHelpVo adminGetHelpById(Long id);
+
+    String getUserEmailByHelpId(Long id);
 }

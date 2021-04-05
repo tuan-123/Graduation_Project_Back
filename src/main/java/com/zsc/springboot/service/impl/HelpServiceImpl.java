@@ -385,5 +385,10 @@ public class HelpServiceImpl extends ServiceImpl<HelpMapper, Help> implements He
         return adminHelpVo;
     }
 
+    @Override
+    public String getUserEmailByHelpId(Long id) {
+        return helpMapper.getUserEmailByHelpId(id);
+    }
+
 
 }

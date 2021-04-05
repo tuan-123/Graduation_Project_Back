@@ -27,7 +27,7 @@ import java.util.List;
 public class AdminSchedule {
 
     private HashMap<String,Object> hashMap = new HashMap<>();
-    @Scheduled(fixedDelay = 16000)
+    @Scheduled(fixedDelay = 10000)
     @Async
     public void adminPushDataToWeb(){
         //System.out.println(Thread.currentThread().getName());

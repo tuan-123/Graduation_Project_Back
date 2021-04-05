@@ -17,4 +17,7 @@ import org.springframework.stereotype.Repository;
 public interface HelpMapper extends BaseMapper<Help> {
     @Select("select count(id) from help")
     long getCount();
+
+    @Select("select email from user where phone = (select user_id from help where id = #{id} limit 1) limit 1")
+    String getUserEmailByHelpId(Long id);
 }
