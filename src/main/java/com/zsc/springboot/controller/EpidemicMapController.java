@@ -37,7 +37,7 @@ public class EpidemicMapController {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    //@RequiresAuthentication
+    @RequiresAuthentication
     @ApiOperation(value = "中国累计疫情人数",response = ServerResponse.class,httpMethod = "GET")
     @GetMapping("/getAllChina")
     public ServerResponse getAllChina() throws IOException {
