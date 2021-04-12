@@ -36,8 +36,8 @@ spring:
   mail:
     host: smtp.163.com
     port: 25
-    username: at_tuan@163.com
-    password: ZWCXOZRLCPPPZARM
+    username: xxxxx
+    password: xxxxx
     #host: smtp.qq.com
     #port: 465
     #username: 1278991950@qq.com
