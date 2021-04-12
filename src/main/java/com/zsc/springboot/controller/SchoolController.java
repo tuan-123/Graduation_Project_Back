@@ -6,13 +6,16 @@ import com.zsc.springboot.config.annotation.OperLogAnnotation;
 import com.zsc.springboot.service.SchoolService;
 import com.zsc.springboot.service.impl.SchoolServiceImpl;
 import com.zsc.springboot.vo.SchoolSelectVo;
+import com.zsc.springboot.vo.SchoolVo;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -27,6 +30,8 @@ import java.util.List;
 public class SchoolController {
     @Autowired
     private SchoolService schoolService;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 添加省份
@@ -62,8 +67,13 @@ public class SchoolController {
     @ApiOperation(value = "获取所有学校",response = ServerResponse.class,httpMethod = "GET")
     @GetMapping("/getAllSchool")
     public ServerResponse getAllSchool(){
-        List<SchoolSelectVo> schoolSelectVos = schoolService.getAllSchoolSelect();
-        return ServerResponse.success(schoolSelectVos);
+        List<SchoolSelectVo> schoolVos = (List<SchoolSelectVo>)redisTemplate.opsForValue().get("school");
+        if(schoolVos == null){
+            List<SchoolSelectVo> schoolSelectVos = schoolService.getAllSchoolSelect();
+            redisTemplate.opsForValue().set("school",schoolSelectVos,1, TimeUnit.HOURS);
+            return ServerResponse.success(schoolSelectVos);
+        }
+        return ServerResponse.success(schoolVos);
     }
 }
 
